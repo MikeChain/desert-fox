@@ -1,7 +1,10 @@
 {
   "cSpell.words": [
+    "autopep",
     "dotenv",
+    "pylint",
     "redis",
+    "sqlalchemy",
     "SQLALCHEMY",
     "sqlite"
   ]
