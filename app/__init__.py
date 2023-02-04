@@ -1,5 +1,5 @@
 from flask import Flask
-from config import Configs
+from config import Config
 from app.extensions import db
 
 
