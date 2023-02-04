@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+  redis:
+    image: 'redis:alpine'
+  db:
+    image: postgres:15-alpine
+    ports:
+      - "5432:5432"
