@@ -7,6 +7,7 @@ from app.extensions import db
 import app.models
 
 BPS_TO_IMPORT = ()
+migrate = Migrate()
 
 
 def create_app(environment):
@@ -16,7 +17,7 @@ def create_app(environment):
 
     db.init_app(app)
 
-    migrate = Migrate(app, db)
+    migrate.init_app(app, db)
     api = Api(app)
 
     @app.route("/test/")
