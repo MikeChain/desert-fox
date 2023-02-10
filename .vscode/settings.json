@@ -7,5 +7,6 @@
     "sqlalchemy",
     "SQLALCHEMY",
     "sqlite"
-  ]
+  ],
+  "python.formatting.provider": "black"
 }
