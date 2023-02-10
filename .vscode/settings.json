@@ -3,6 +3,7 @@
     "autopep",
     "dotenv",
     "jsdelivr",
+    "nullable",
     "pylint",
     "redis",
     "smorest",

@@ -2,16 +2,17 @@ from flask import Flask
 from flask_smorest import Api
 from flask_migrate import Migrate
 
-from config import Config
 from app.extensions import db
+
+import app.models
 
 BPS_TO_IMPORT = ()
 
 
-def create_app():
+def create_app(environment):
     app = Flask(__name__)
 
-    app.config.from_object(Config)
+    app.config.from_object(environment)
 
     db.init_app(app)
 
