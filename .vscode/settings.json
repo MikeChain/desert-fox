@@ -5,6 +5,7 @@
     "jsdelivr",
     "pylint",
     "redis",
+    "smorest",
     "sqlalchemy",
     "SQLALCHEMY",
     "sqlite"
