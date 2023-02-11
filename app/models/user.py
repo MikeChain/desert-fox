@@ -20,7 +20,10 @@ class UserModel(db.Model):
     created_at = db.Column(db.DateTime, server_default=func.now())
     last_password_change = db.Column(db.Date)
     last_login = db.Column(db.Date)
-    user_type = db.Column(db.Enum("admin", "pro", "standard", name="user_type"))
+    user_type = db.Column(
+        db.Enum("admin", "pro", "standard", name="user_type"),
+        server_default="standard",
+    )
     preferred_language_code = db.Column(
         db.Enum("es", "en", name="preferred_language_code")
     )

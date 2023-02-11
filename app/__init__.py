@@ -3,8 +3,7 @@ from flask_smorest import Api
 
 import app.models
 from app.extensions import db, migrate
-
-BPS_TO_IMPORT = ()
+from app.routes import BPS_TO_IMPORT
 
 
 def create_app(environment):

@@ -4,6 +4,7 @@
     "dotenv",
     "jsdelivr",
     "nullable",
+    "passlib",
     "pylint",
     "redis",
     "smorest",
