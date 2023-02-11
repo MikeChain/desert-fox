@@ -1,9 +1,8 @@
 from flask import Flask
 from flask_smorest import Api
 
-from app.extensions import db, migrate
-
 import app.models
+from app.extensions import db, migrate
 
 BPS_TO_IMPORT = ()
 
