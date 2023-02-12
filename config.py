@@ -16,6 +16,7 @@ class Config(object):
     API_VERSION = "v1"
     OPENAPI_VERSION = "3.0.3"
     OPENAPI_URL_PREFIX = "/"
+    JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", default=SECRET_KEY)
 
 
 class DevConfig(Config):
