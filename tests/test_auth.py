@@ -40,3 +40,16 @@ def test_register(client):
     assert "password" not in j_data
 
     assert j_data["preferred_language_code"] == "es"
+
+
+def test_register_existent_user(client):
+    data = {"email": "testuser@example.com", "password": "testpassword"}
+
+    # Enviar una solicitud de POST al endpoint de registro
+    response = client.post("/auth/register", json=data)
+    assert response.status_code == 201
+
+    response = client.post("/auth/register", json=data)
+    assert response.status_code == 409
+    j_data = json.loads(response.get_data(as_text=True))
+    assert j_data["message"] == "Email already exists."
