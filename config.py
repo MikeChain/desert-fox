@@ -15,11 +15,11 @@ class Config(object):
     API_TITLE = "Desert fox REST API"
     API_VERSION = "v1"
     OPENAPI_VERSION = "3.0.3"
-    OPENAPI_URL_PREFIX = "/"
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", default=SECRET_KEY)
 
 
 class DevConfig(Config):
+    OPENAPI_URL_PREFIX = "/"
     OPENAPI_SWAGGER_UI_PATH = "/swagger-ui"
     OPENAPI_SWAGGER_UI_URL = "https:cdn.jsdelivr.net/npm/swagger-ui-dist/"
     PROPAGATE_EXCEPTIONS = True
