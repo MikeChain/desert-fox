@@ -9,6 +9,7 @@
     "passlib",
     "pylint",
     "redis",
+    "sadd",
     "smorest",
     "sqlalchemy",
     "SQLALCHEMY",

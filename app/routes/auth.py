@@ -1,3 +1,5 @@
+import redis
+from flask import current_app
 from flask.views import MethodView
 from flask_jwt_extended import (
     create_access_token,
@@ -68,13 +70,29 @@ class UserLogin(MethodView):
 
 @bp.route("/logout")
 class UserLogout(MethodView):
+    def __init__(self):
+        self.redis_client = redis.from_url(current_app.config["REDIS_URI"])
+
     @jwt_required()
-    def post():
-        pass
+    def post(self):
+        jti = get_jwt()["jti"]
+        self.redis_client.sadd("jwt:blocklist", jti)
+
+        return {"message": "Successfully logged out."}
 
 
 @bp.route("/refresh")
 class TokenRefresh(MethodView):
+    def __init__(self):
+        self.redis_client = redis.from_url(current_app.config["REDIS_URI"])
+
     @jwt_required(refresh=True)
-    def post():
-        pass
+    def post(self):
+        current_user = get_jwt_identity()
+        new_token = create_access_token(identity=current_user, fresh=False)
+
+        # Para refrescar el token una vez y poner el refresh token bloqueado
+        jti = get_jwt()["jti"]
+        self.redis_client.sadd("jwt:blocklist", jti)
+
+        return {"access_token": new_token}

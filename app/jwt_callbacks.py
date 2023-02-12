@@ -31,7 +31,7 @@ def init_jwt(app, redis_client):
         )
 
     @jwt.revoked_token_loader
-    def revoked_token_callback(error):
+    def revoked_token_callback(jwt_header, jwt_payload):
         return (
             jsonify(
                 {
