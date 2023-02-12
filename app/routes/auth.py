@@ -24,7 +24,7 @@ bp = Blueprint(
 @bp.route("/register")
 class UserRegister(MethodView):
     @bp.arguments(UserRegistrationSchema)
-    @bp.response(200, UserSchema)
+    @bp.response(201, UserSchema)
     def post(self, user_data):
         if UserModel.query.filter(
             UserModel.email == user_data["email"]

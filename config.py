@@ -27,6 +27,7 @@ class DevConfig(Config):
 
 class QasConfig(Config):
     SQLALCHEMY_DATABASE_URI = f"{os.environ.get('DATABASE_URI')}_test"
+    TESTING = True
 
 
 class PrdConfig(Config):

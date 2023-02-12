@@ -1,7 +1,8 @@
 import pytest
 
+import app.models
 from app import create_app
-from app.extensions import db, migrate
+from app.extensions import db
 from config import envs
 
 
@@ -10,15 +11,11 @@ def app():
     env = envs["qas"]
     app = create_app(environment=env)
 
-    yield app
-
-
-@pytest.fixture(scope="module")
-def init_db(app):
     with app.app_context():
-        migrate.upgrade()
-        yield db
-        migrate.downgrade(revision="base")
+        db.create_all()
+        yield app
+        db.session.close()
+        db.drop_all()
 
 
 @pytest.fixture()
