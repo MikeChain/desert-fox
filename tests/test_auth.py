@@ -53,3 +53,33 @@ def test_register_existent_user(client):
     assert response.status_code == 409
     j_data = json.loads(response.get_data(as_text=True))
     assert j_data["message"] == "Email already exists."
+
+
+def test_login(client):
+    data = {"email": "testuser@example.com", "password": "testpassword"}
+
+    # Enviar una solicitud de POST al endpoint de registro
+    response = client.post("/auth/register", json=data)
+    assert response.status_code == 201
+
+    # Enviar una solicitud de POST al endpoint de inicio de sesión
+    response = client.post("/auth/login", json=data)
+
+    assert response.status_code == 200
+    assert "access_token" in response.json
+    assert "refresh_token" in response.json
+
+
+def test_login_failed(client):
+    data = {"email": "testuser@example.com", "password": "testpassword"}
+
+    # Enviar una solicitud de POST al endpoint de registro
+    response = client.post("/auth/register", json=data)
+    assert response.status_code == 201
+
+    data["password"] = "other_password"
+    response = client.post("/auth/login", json=data)
+
+    assert response.status_code == 401
+    assert "You shall not pass." == response.json["message"]
+    assert "Unauthorized" == response.json["status"]
