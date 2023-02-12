@@ -1,1 +1,27 @@
 Single-database configuration for Flask.
+
+# Comandos
+
+Para iniciar migraciones
+
+```
+flask --app main db init
+```
+
+Para agregar migraciones
+
+```
+flask --app main db migrate -m <"Mensaje">
+```
+
+Para migrar 'adelante'
+
+```
+flask --app main db upgrade
+```
+
+Para migrar 'atrás'
+
+```
+flask --app main db downgrade
+```

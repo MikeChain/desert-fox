@@ -27,3 +27,9 @@ class UserModel(db.Model):
     preferred_language_code = db.Column(
         db.Enum("es", "en", name="preferred_language_code")
     )
+    accounts = db.relationship(
+        "AccountsModel",
+        lazy="dynamic",
+        back_populates="user",
+        cascade="all, delete",
+    )
