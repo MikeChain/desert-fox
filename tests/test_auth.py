@@ -83,3 +83,10 @@ def test_login_failed(client):
     assert response.status_code == 401
     assert "You shall not pass." == response.json["message"]
     assert "Unauthorized" == response.json["status"]
+
+
+def test_login_non_existent(client):
+    data = {"email": "testuser@example.com", "password": "testpassword"}
+
+    response = client.post("/auth/login", json=data)
+    assert response.status_code == 404
