@@ -37,7 +37,7 @@ class UserService:
 
         user = self.model(
             email=user_data["email"],
-            password=pbkdf2_sha512.hash(user_data["password"]),
+            password=self._hash_password(user_data["password"]),
             display_name=user_data.get("display_name", None),
             preferred_language_code=user_data.get(
                 "preferred_language_code", "es"
@@ -64,3 +64,27 @@ class UserService:
         user.last_login = date.today()
 
         return user
+
+    def update(self, user_data, user_id):
+        user = self.get_user_404(user_id)
+
+        if "password" in user_data:
+            user.password = self._hash_password(user_data["password"])
+
+        user.display_name = user_data.get("display_name", user.display_name)
+        user.email = user_data.get("email", user.email)
+        user.preferred_language_code = user_data.get(
+            "preferred_language_code", user.preferred_language_code
+        )
+
+        try:
+            db.session.add(user)
+            db.session.commit()
+        except SQLAlchemyError:
+            raise DatabaseError
+
+        return user
+
+    @staticmethod
+    def _hash_password(password):
+        return pbkdf2_sha512.hash(password)
