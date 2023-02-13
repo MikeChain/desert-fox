@@ -11,7 +11,7 @@ bp = Blueprint(
 )
 
 
-@bp.route("/")
+@bp.route("")
 class UsersList(MethodView):
     @jwt_required(fresh=True)
     @bp.response(200, UserSchema(many=True))
