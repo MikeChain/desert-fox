@@ -4,9 +4,9 @@ from passlib.hash import pbkdf2_sha512
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.exceptions import (
+    AlreadyExistsError,
     AuthenticationFailedException,
     DatabaseError,
-    EmailAlreadyExistsError,
     UserNotFoundException,
 )
 from app.extensions import db
@@ -33,7 +33,7 @@ class UserService:
         user = self.get_user_by_email(user_data["email"])
 
         if user:
-            raise EmailAlreadyExistsError("Email already exists.")
+            raise AlreadyExistsError("Email already exists.")
 
         user = self.model(
             email=user_data["email"],

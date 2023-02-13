@@ -11,9 +11,9 @@ from flask_jwt_extended import (
 from flask_smorest import Blueprint, abort
 
 from app.exceptions import (
+    AlreadyExistsError,
     AuthenticationFailedException,
     DatabaseError,
-    EmailAlreadyExistsError,
     UserNotFoundException,
 )
 from app.schemas import UserLoginSchema, UserRegistrationSchema, UserSchema
@@ -31,7 +31,7 @@ class UserRegister(MethodView):
     def post(self, user_data):
         try:
             user = UserService().create_user(user_data)
-        except EmailAlreadyExistsError:
+        except AlreadyExistsError:
             abort(409, message="Email already exists.")
         except DatabaseError:
             abort(500, message="Our engineering monkeys are having trouble")
