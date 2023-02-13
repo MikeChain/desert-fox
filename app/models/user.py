@@ -33,3 +33,9 @@ class UserModel(db.Model):
         back_populates="user",
         cascade="all, delete",
     )
+    subcategories = db.relationship(
+        "SubcategoriesModel",
+        lazy="dynamic",
+        back_populates="user",
+        cascade="all, delete",
+    )
