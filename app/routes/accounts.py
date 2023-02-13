@@ -10,11 +10,11 @@ bp = Blueprint(
     "Accounts",
     __name__,
     description="Operations on accounts",
-    url_prefix="/accounts",
+    url_prefix="/api/v1/accounts",
 )
 
 
-@bp.route("")
+@bp.route("/")
 class Accounts(MethodView):
     @jwt_required()
     @bp.response(200, AccountSchema(many=True))

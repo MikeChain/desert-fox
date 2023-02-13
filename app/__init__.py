@@ -28,6 +28,6 @@ def create_app(environment):
         return "<h1>Probando el patrón de fábrica de aplicaciones Flask</h1>"
 
     for bp in BPS_TO_IMPORT:
-        api.register_blueprint(bp, redis_client=redis_client)
+        api.register_blueprint(bp)
 
     return app

@@ -7,7 +7,10 @@ from app.schemas import UserSchema, UserUpdateSchema
 from app.services import UserService
 
 bp = Blueprint(
-    "Users", __name__, description="Operations on users", url_prefix="/users"
+    "Users",
+    __name__,
+    description="Operations on users",
+    url_prefix="/api/v1/users",
 )
 
 

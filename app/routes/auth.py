@@ -20,7 +20,7 @@ from app.schemas import UserLoginSchema, UserRegistrationSchema, UserSchema
 from app.services.user import UserService
 
 bp = Blueprint(
-    "Auth", __name__, description="Auth operations", url_prefix="/auth"
+    "Auth", __name__, description="Auth operations", url_prefix="/api/v1/auth"
 )
 
 
