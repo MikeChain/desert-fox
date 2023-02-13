@@ -61,7 +61,10 @@ class UserService:
         if not pbkdf2_sha512.verify(password, user.password):
             raise AuthenticationFailedException
 
-        user.last_login = date.today()
+        if user.last_login != date.today():
+            user.last_login = date.today()
+            db.session.add(user)
+            db.session.commit()
 
         return user
 

@@ -9,8 +9,6 @@ from flask_jwt_extended import (
     jwt_required,
 )
 from flask_smorest import Blueprint, abort
-from passlib.hash import pbkdf2_sha512
-from sqlalchemy.exc import SQLAlchemyError
 
 from app.exceptions import (
     AuthenticationFailedException,
@@ -18,7 +16,6 @@ from app.exceptions import (
     EmailAlreadyExistsError,
     UserNotFoundException,
 )
-from app.models import UserModel
 from app.schemas import UserLoginSchema, UserRegistrationSchema, UserSchema
 from app.services.user import UserService
 
@@ -51,8 +48,18 @@ class UserLogin(MethodView):
                 user_data["email"], user_data["password"]
             )
 
-            access_token = create_access_token(identity=user.id, fresh=True)
-            refresh_token = create_refresh_token(identity=user.id)
+            additional_claims = {
+                "type": user.user_type,
+                "lang": user.preferred_language_code,
+            }
+            access_token = create_access_token(
+                identity=user.id,
+                fresh=True,
+                additional_claims=additional_claims,
+            )
+            refresh_token = create_refresh_token(
+                identity=user.id, additional_claims=additional_claims
+            )
             return {
                 "access_token": access_token,
                 "refresh_token": refresh_token,
@@ -84,7 +91,16 @@ class TokenRefresh(MethodView):
     @jwt_required(refresh=True)
     def post(self):
         current_user = get_jwt_identity()
-        new_token = create_access_token(identity=current_user, fresh=False)
+        claims = get_jwt()
+        additional_claims = {
+            "type": claims["type"],
+            "lang": claims["lang"],
+        }
+        new_token = create_access_token(
+            identity=current_user,
+            additional_claims=additional_claims,
+            fresh=False,
+        )
 
         # Para refrescar el token una vez y poner el refresh token bloqueado
         jti = get_jwt()["jti"]
