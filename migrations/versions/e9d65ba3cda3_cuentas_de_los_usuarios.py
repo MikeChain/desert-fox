@@ -28,7 +28,7 @@ def upgrade():
             nullable=False,
         ),
         sa.Column(
-            "currency_id",
+            "currency",
             sa.Enum("MXN", "USD", "EUR", name="currency_id"),
             server_default="MXN",
             nullable=False,

@@ -21,7 +21,7 @@ class AccountsModel(db.Model):
     account_type = db.Column(
         db.Enum("cash", "debit", "credit", name="account_type"), nullable=False
     )
-    currency_id = db.Column(
+    currency = db.Column(
         db.Enum("MXN", "USD", "EUR", name="currency_id"),
         nullable=False,
         server_default="MXN",
