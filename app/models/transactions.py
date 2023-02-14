@@ -24,7 +24,9 @@ class TransactionsModel(db.Model):
         db.Enum("pending", "verified", "rejected", name="transaction_status"),
         nullable=False,
     )
-    total_amount = db.Column(db.DECIMAL, nullable=False, default=0)
+    total_amount = db.Column(
+        db.Numeric(precision=20, scale=4), nullable=False, default=0
+    )
     transaction_date = db.Column(db.DateTime, nullable=False)
     created_at = db.Column(
         db.DateTime, nullable=False, server_default=func.now()
@@ -33,3 +35,9 @@ class TransactionsModel(db.Model):
 
     db.Index("transactions_user_id_index", user_id)
     user = db.relationship("UserModel", back_populates="transactions")
+    transaction_details = db.relationship(
+        "TransactionDetailsModel",
+        lazy="dynamic",
+        back_populates="transaction",
+        cascade="all, delete",
+    )

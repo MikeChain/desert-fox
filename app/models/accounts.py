@@ -29,7 +29,9 @@ class AccountsModel(db.Model):
     created_at = db.Column(
         db.DateTime, nullable=False, server_default=func.now()
     )
-    initial_balance = db.Column(db.DECIMAL(), nullable=False, default=0)
+    initial_balance = db.Column(
+        db.Numeric(precision=20, scale=4), nullable=False, default=0
+    )
 
     db.Index("accounts_user_id_index", user_id)
     user = db.relationship("UserModel", back_populates="accounts")

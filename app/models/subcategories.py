@@ -32,3 +32,9 @@ class SubcategoriesModel(db.Model):
     category = db.relationship(
         "CategoriesModel", back_populates="subcategories"
     )
+    transaction_details = db.relationship(
+        "TransactionDetailsModel",
+        lazy="dynamic",
+        back_populates="subcategory",
+        cascade="all, delete",
+    )
