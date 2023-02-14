@@ -39,3 +39,9 @@ class UserModel(db.Model):
         back_populates="user",
         cascade="all, delete",
     )
+    transactions = db.relationship(
+        "TransactionsModel",
+        lazy="dynamic",
+        back_populates="user",
+        cascade="all, delete",
+    )
