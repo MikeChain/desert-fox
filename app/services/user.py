@@ -1,3 +1,4 @@
+import uuid
 from datetime import date
 
 from passlib.hash import pbkdf2_sha512
@@ -35,7 +36,13 @@ class UserService:
         if user:
             raise AlreadyExistsError("Email already exists.")
 
+        if "id" in user_data:
+            id = uuid.UUID(user_data["id"]).hex
+        else:
+            id = uuid.uuid4()
+
         user = self.model(
+            id=id,
             email=user_data["email"],
             password=self._hash_password(user_data["password"]),
             display_name=user_data.get("display_name", None),

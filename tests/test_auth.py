@@ -1,5 +1,7 @@
 import json
+import uuid
 
+from flask_jwt_extended import decode_token
 from passlib.hash import pbkdf2_sha512
 
 from app.models import UserModel
@@ -54,6 +56,10 @@ def test_login(client, user):
     data = {"email": "testuser@example.com", "password": "testpassword"}
 
     response = client.post("/api/v1/auth/login", json=data)
+
+    token = decode_token(response.json["access_token"])
+
+    assert token["sub"] == "6e4987c5-851f-4eda-89bc-fb8b8fbd518a"
 
     assert response.status_code == 200
     assert "access_token" in response.json

@@ -1,3 +1,5 @@
+import uuid
+
 import pytest
 
 import app.models
@@ -26,5 +28,9 @@ def client(app):
 
 @pytest.fixture()
 def user():
-    data = {"email": "testuser@example.com", "password": "testpassword"}
+    data = {
+        "email": "testuser@example.com",
+        "password": "testpassword",
+        "id": uuid.UUID("6e4987c5-851f-4eda-89bc-fb8b8fbd518a").hex,
+    }
     UserService().create_user(data)
