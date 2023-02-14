@@ -31,3 +31,6 @@ class TransactionDetailsModel(db.Model):
     subcategory = db.relationship(
         "SubcategoriesModel", back_populates="transaction_details"
     )
+
+    db.Index("transaction_details_index", transaction_id),
+    db.Index("subcategory_details_index", subcategory_id)
