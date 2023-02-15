@@ -3,6 +3,7 @@ from marshmallow import fields
 from .accounts import AccountSchema, UpdateAccountSchema
 from .categories import CategoriesSchema, UpdateCategoriesSchema
 from .subcategories import PlainSubcategoriesSchema
+from .transactions import TransactionSchema, TransactionUpdateSchema
 from .users import (
     UserLoginSchema,
     UserRegistrationSchema,
