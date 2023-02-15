@@ -42,11 +42,7 @@ class SubcategoriesService:
     def update_subcategory(self, subcategory_data, subcategory_id):
         subcategory = self.get_subcategory(subcategory_id)
 
-        if "name" in subcategory_data:
-            subcategory.name = subcategory_data["name"]
-
-        if "description" in subcategory_data:
-            subcategory.description = subcategory_data["description"]
+        subcategory.name = subcategory_data["name"]
 
         try:
             db.session.add(subcategory)
