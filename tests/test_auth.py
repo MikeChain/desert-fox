@@ -1,5 +1,4 @@
 import json
-import uuid
 
 from flask_jwt_extended import decode_token
 from passlib.hash import pbkdf2_sha512
@@ -119,3 +118,29 @@ def test_refresh(client, auth_tokens):
 
     assert tk["fresh"] == False
     assert tk["type"] == "access"
+
+
+def test_refresh_with_access_token(client, auth_tokens):
+    token = auth_tokens["access_token"]
+
+    response = client.post(
+        "/api/v1/auth/refresh",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 401
+    assert response.json["message"] == "Signature verification failed."
+    assert response.json["error"] == "invalid_token"
+
+
+def test_expired_token(client, short_tokens):
+    import time
+
+    time.sleep(1)
+    response = client.post("/api/v1/auth/logout")
+    response = client.post(
+        "/api/v1/auth/logout",
+        headers={"Authorization": f"Bearer {short_tokens['access_token']}"},
+    )
+    assert response.status_code == 401
+    assert response.json["message"] == "The token has expired"
+    assert response.json["error"] == "token_expired"

@@ -43,3 +43,13 @@ def auth_tokens(user):
         user_data["email"], user_data["password"]
     )
     return tokens
+
+
+@pytest.fixture()
+def short_tokens(app):
+    UserService().create_user(user_data)
+    app.config["JWT_ACCESS_TOKEN_EXPIRES"] = 1
+    tokens = UserService().authenticate(
+        user_data["email"], user_data["password"]
+    )
+    return tokens
