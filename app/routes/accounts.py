@@ -14,22 +14,24 @@ bp = Blueprint(
 )
 
 
-@bp.route("/")
+@bp.route("")
 class Accounts(MethodView):
     @jwt_required()
     @bp.response(200, AccountSchema(many=True))
     def get(self):
         current_user = get_jwt_identity()
-        return AccountsService.get_all_user_accounts(current_user)
+        return AccountsService().get_all_user_accounts(current_user)
 
     @jwt_required()
     @bp.arguments(AccountSchema)
-    @bp.response(200, AccountSchema)
+    @bp.response(201, AccountSchema)
     def post(self, account_data):
         current_user = get_jwt_identity()
 
         try:
-            account = AccountsService.create_account(account_data, current_user)
+            account = AccountsService().create_account(
+                account_data, current_user
+            )
         except AlreadyExistsError:
             abort(409, message="Account already exists.")
         except DatabaseError:
@@ -44,13 +46,13 @@ class Account(MethodView):
     @bp.response(200, AccountSchema)
     def get(self, account_id):
         current_user = get_jwt_identity()
-        return AccountsService.get_account(account_id, current_user)
+        return AccountsService().get_account(account_id, current_user)
 
     @jwt_required()
     @bp.arguments(UpdateAccountSchema)
     @bp.response(200, AccountSchema)
     def put(self, account_data, account_id):
         current_user = get_jwt_identity()
-        return AccountsService.update_account(
+        return AccountsService().update_account(
             account_data, account_id, current_user
         )

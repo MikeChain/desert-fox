@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.exceptions import AlreadyExistsError, DatabaseError
@@ -29,6 +31,10 @@ class AccountsService:
         if not "initial_balance" in account_data:
             account_data["initial_balance"] = 0
 
+        if "id" in account_data:
+            account_data["id"] = uuid.UUID(account_data["id"]).hex
+
+        account_data["user_id"] = user_id
         account = self.model(**account_data)
 
         try:
