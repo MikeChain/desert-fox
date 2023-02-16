@@ -8,6 +8,12 @@ from app.extensions import db
 from app.services import UserService
 from config import envs
 
+user_data = {
+    "email": "testuser@example.com",
+    "password": "testpassword",
+    "id": uuid.UUID("6e4987c5-851f-4eda-89bc-fb8b8fbd518a").hex,
+}
+
 
 @pytest.fixture
 def app():
@@ -28,9 +34,12 @@ def client(app):
 
 @pytest.fixture()
 def user():
-    data = {
-        "email": "testuser@example.com",
-        "password": "testpassword",
-        "id": uuid.UUID("6e4987c5-851f-4eda-89bc-fb8b8fbd518a").hex,
-    }
-    UserService().create_user(data)
+    UserService().create_user(user_data)
+
+
+@pytest.fixture()
+def auth_tokens(user):
+    tokens = UserService().authenticate(
+        user_data["email"], user_data["password"]
+    )
+    return tokens

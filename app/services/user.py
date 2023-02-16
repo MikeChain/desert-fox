@@ -1,6 +1,7 @@
 import uuid
 from datetime import date
 
+from flask_jwt_extended import create_access_token, create_refresh_token
 from passlib.hash import pbkdf2_sha512
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -73,7 +74,23 @@ class UserService:
             db.session.add(user)
             db.session.commit()
 
-        return user
+        additional_claims = {
+            "type": user.user_type,
+            "lang": user.preferred_language_code,
+        }
+        access_token = create_access_token(
+            identity=user.id,
+            fresh=True,
+            additional_claims=additional_claims,
+        )
+        refresh_token = create_refresh_token(
+            identity=user.id, additional_claims=additional_claims
+        )
+
+        return {
+            "access_token": access_token,
+            "refresh_token": refresh_token,
+        }
 
     def update(self, user_data, user_id):
         user = self.get_user_404(user_id)

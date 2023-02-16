@@ -44,26 +44,11 @@ class UserLogin(MethodView):
     @bp.arguments(UserLoginSchema)
     def post(self, user_data):
         try:
-            user = UserService().authenticate(
+            user_tokens = UserService().authenticate(
                 user_data["email"], user_data["password"]
             )
 
-            additional_claims = {
-                "type": user.user_type,
-                "lang": user.preferred_language_code,
-            }
-            access_token = create_access_token(
-                identity=user.id,
-                fresh=True,
-                additional_claims=additional_claims,
-            )
-            refresh_token = create_refresh_token(
-                identity=user.id, additional_claims=additional_claims
-            )
-            return {
-                "access_token": access_token,
-                "refresh_token": refresh_token,
-            }
+            return user_tokens
         except UserNotFoundException:
             abort(404, message="User not found.")
         except AuthenticationFailedException:

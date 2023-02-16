@@ -81,3 +81,23 @@ def test_login_unexistent(client):
 
     response = client.post("/api/v1/auth/login", json=data)
     assert response.status_code == 404
+
+
+def test_logout(client, auth_tokens):
+    response = client.post("/api/v1/auth/logout")
+
+    # intentar hacer logout sin token
+    assert response.status_code == 401
+
+    response = client.post(
+        "/api/v1/auth/logout",
+        headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
+    )
+    assert response.status_code == 200
+
+    # token inválido
+    response = client.post(
+        "/api/v1/auth/logout",
+        headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
+    )
+    assert response.status_code == 401
