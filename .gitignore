@@ -130,3 +130,6 @@ dmypy.json
 
 # sqlite db
 app.db
+
+# redis
+*.rdb
