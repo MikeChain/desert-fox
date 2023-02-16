@@ -101,3 +101,21 @@ def test_logout(client, auth_tokens):
         headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
     )
     assert response.status_code == 401
+
+
+def test_refresh(client, auth_tokens):
+    token = auth_tokens["refresh_token"]
+
+    response = client.post(
+        "/api/v1/auth/refresh",
+        headers={"Authorization": f"Bearer {token}"},
+    )
+    assert response.status_code == 200
+    assert "access_token" in response.json
+
+    tk = decode_token(response.json["access_token"])
+
+    print(tk)
+
+    assert tk["fresh"] == False
+    assert tk["type"] == "access"

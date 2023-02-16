@@ -75,7 +75,7 @@ class UserService:
             db.session.commit()
 
         additional_claims = {
-            "type": user.user_type,
+            "u_type": user.user_type,
             "lang": user.preferred_language_code,
         }
         access_token = create_access_token(
@@ -83,6 +83,7 @@ class UserService:
             fresh=True,
             additional_claims=additional_claims,
         )
+
         refresh_token = create_refresh_token(
             identity=user.id, additional_claims=additional_claims
         )

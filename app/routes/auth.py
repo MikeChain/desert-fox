@@ -1,9 +1,8 @@
 import redis
-from flask import current_app
+from flask import current_app, request
 from flask.views import MethodView
 from flask_jwt_extended import (
     create_access_token,
-    create_refresh_token,
     get_jwt,
     get_jwt_identity,
     jwt_required,
@@ -78,7 +77,7 @@ class TokenRefresh(MethodView):
         current_user = get_jwt_identity()
         claims = get_jwt()
         additional_claims = {
-            "type": claims["type"],
+            "u_type": claims["u_type"],
             "lang": claims["lang"],
         }
         new_token = create_access_token(
