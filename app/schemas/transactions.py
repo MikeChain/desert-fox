@@ -1,7 +1,7 @@
 from marshmallow import Schema, fields, validate
 
 
-class TransactionSchema(Schema):
+class PlainTransactionSchema(Schema):
     id = fields.UUID(dump_only=True)
     type = fields.String(
         required=True, validate=validate.OneOf(["income", "expense"])
@@ -15,7 +15,7 @@ class TransactionSchema(Schema):
     notes = fields.String()
 
 
-class TransactionUpdateSchema(Schema):
+class PlainTransactionUpdateSchema(Schema):
     type = fields.String(validate=validate.OneOf(["income", "expense"]))
     status = fields.String(
         validate=validate.OneOf(["pending", "verified", "rejected"])

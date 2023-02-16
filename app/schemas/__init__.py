@@ -3,7 +3,11 @@ from marshmallow import fields
 from .accounts import AccountSchema, UpdateAccountSchema
 from .categories import CategoriesSchema, UpdateCategoriesSchema
 from .subcategories import PlainSubcategoriesSchema
-from .transactions import TransactionSchema, TransactionUpdateSchema
+from .transaction_details import (
+    PlainTransactionDetailsSchema,
+    PlainTransactionDetailsUpdateSchema,
+)
+from .transactions import PlainTransactionSchema, PlainTransactionUpdateSchema
 from .users import (
     UserLoginSchema,
     UserRegistrationSchema,
@@ -20,4 +24,16 @@ class SubcategoriesSchema(PlainSubcategoriesSchema):
 class CategoriesWithSubSchema(CategoriesSchema):
     subcategories = fields.List(
         fields.Nested(PlainSubcategoriesSchema()), dump_only=True
+    )
+
+
+class TransactionSchema(PlainTransactionSchema):
+    transaction_details = fields.List(
+        fields.Nested(PlainTransactionDetailsSchema)
+    )
+
+
+class UpdateTransactionSchema(PlainTransactionUpdateSchema):
+    transaction_details = fields.List(
+        fields.Nested(PlainTransactionDetailsUpdateSchema)
     )
