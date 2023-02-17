@@ -47,6 +47,26 @@ def user():
 
 
 @pytest.fixture()
+def admin():
+    UserService().create_user(
+        {
+            "email": "test_user@example.com",
+            "password": "testpassword",
+            "user_type": "admin",
+            "id": uuid.UUID("6e4987c5-851f-4eda-89bc-fb8b8fbd518a").hex,
+        }
+    )
+
+
+@pytest.fixture()
+def admin_tokens(admin):
+    tokens = UserService().authenticate(
+        "test_user@example.com", user_data["password"]
+    )
+    return tokens
+
+
+@pytest.fixture()
 def auth_tokens(user):
     tokens = UserService().authenticate(
         user_data["email"], user_data["password"]

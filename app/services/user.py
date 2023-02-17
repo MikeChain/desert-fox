@@ -33,7 +33,7 @@ class UserService:
         return self.model.query.get_or_404(user_id)
 
     def get_user_by_email(self, email):
-        return UserModel.query.filter_by(email=email).first()
+        return self.model.query.filter_by(email=email).first()
 
     def create_user(self, user_data):
         user = self.get_user_by_email(user_data["email"])
@@ -41,20 +41,18 @@ class UserService:
         if user:
             raise AlreadyExistsError("Email already exists.")
 
-        if "id" in user_data:
-            id = uuid.UUID(user_data["id"]).hex
-        else:
-            id = uuid.uuid4()
-
-        user = self.model(
-            id=id,
-            email=user_data["email"],
-            password=self._hash_password(user_data["password"]),
-            display_name=user_data.get("display_name", None),
-            preferred_language_code=user_data.get(
+        data = {
+            **user_data,
+            "password": self._hash_password(user_data["password"]),
+            "preferred_language_code": user_data.get(
                 "preferred_language_code", "es"
             ),
-        )
+        }
+
+        if "id" in user_data:
+            data["id"] = uuid.UUID(user_data["id"]).hex
+
+        user = self.model(**data)
 
         try:
             db.session.add(user)
