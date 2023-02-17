@@ -6,7 +6,7 @@ from flask_jwt_extended import decode_token
 import app.models
 from app import create_app
 from app.extensions import db
-from app.services import AccountsService, UserService
+from app.services import AccountsService, CategoriesService, UserService
 from config import envs
 
 user_data = {
@@ -90,3 +90,15 @@ def account(auth_tokens):
 
     current_user = tk["sub"]
     AccountsService().create_account(account_data, current_user)
+
+
+@pytest.fixture()
+def category():
+    CategoriesService().create_category(
+        {
+            "name": "test",
+            "description": "test",
+            "type": "income",
+            "id": "1948b81b-42bf-4ea8-87f0-61a1416e3ffa",
+        }
+    )

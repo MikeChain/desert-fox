@@ -34,7 +34,7 @@ class Category(MethodView):
         try:
             category = CategoriesService().create_category(category_data)
         except AlreadyExistsError:
-            abort(409, message="Account already exists.")
+            abort(409, message="Category already exists.")
         except DatabaseError:
             abort(500, message="Our engineering monkeys are having trouble")
 

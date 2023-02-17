@@ -34,6 +34,8 @@ class SubcategoriesService:
         if "id" in subcategory_data:
             subcategory_data["id"] = uuid.UUID(subcategory_data["id"]).hex
 
+        subcategory_data["user_id"] = uuid.UUID(subcategory_data["user_id"]).hex
+
         subcategory = self.model(**subcategory_data)
 
         try:

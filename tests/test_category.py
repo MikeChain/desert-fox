@@ -1,18 +1,4 @@
-import pytest
-
-from app.services import CategoriesService
-
 category_data = {"name": "test", "description": "test", "type": "income"}
-
-
-@pytest.fixture()
-def category():
-    CategoriesService().create_category(
-        {
-            **category_data,
-            "id": "1948b81b-42bf-4ea8-87f0-61a1416e3ffa",
-        }
-    )
 
 
 def test_get_empty_categories(client, auth_tokens):
