@@ -1,5 +1,6 @@
 import uuid
 
+from flask_smorest import abort
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.exceptions import AlreadyExistsError, DatabaseError
@@ -17,8 +18,13 @@ class SubcategoriesService:
     def get_all_subcategories_by_category(self, category_id):
         return self.model.query.filter_by(category_id=category_id).all()
 
-    def get_subcategory(self, subcategory_id):
-        return self.model.query.filter_by(id=subcategory_id).first()
+    def get_subcategory(self, subcategory_id, user_id):
+        subcategory = self.model.query.filter_by(id=subcategory_id).first()
+
+        if subcategory.is_default or subcategory.user_id == user_id:
+            return subcategory
+
+        abort(404, "This is not the subcategory you are looking for")
 
     def get_subcategory_by_name(self, subcategory_name):
         return self.model.query.filter_by(name=subcategory_name).first()
@@ -35,6 +41,10 @@ class SubcategoriesService:
             subcategory_data["id"] = uuid.UUID(subcategory_data["id"]).hex
 
         subcategory_data["user_id"] = uuid.UUID(subcategory_data["user_id"]).hex
+        subcategory_data["is_active"] = subcategory_data.get("is_active", True)
+        subcategory_data["is_default"] = subcategory_data.get(
+            "is_default", False
+        )
 
         subcategory = self.model(**subcategory_data)
 

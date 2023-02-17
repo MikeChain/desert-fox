@@ -1,5 +1,5 @@
 from flask.views import MethodView
-from flask_jwt_extended import get_jwt, jwt_required
+from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required
 from flask_smorest import Blueprint, abort
 
 from app.exceptions import AlreadyExistsError, DatabaseError
@@ -15,7 +15,7 @@ bp = Blueprint(
 
 
 @bp.route("")
-class Category(MethodView):
+class Subcategory(MethodView):
     @jwt_required()
     @bp.response(200, SubcategoriesSchema(many=True))
     def get(self):
@@ -43,3 +43,13 @@ class Category(MethodView):
             abort(500, message="Our engineering monkeys are having trouble")
 
         return subcategory
+
+    @bp.route("/<uuid:subcategory_id>")
+    class SingleSubcategory(MethodView):
+        @jwt_required()
+        @bp.response(200, SubcategoriesSchema)
+        def get(self, subcategory_id):
+            user_id = get_jwt_identity()
+            return SubcategoriesService().get_subcategory(
+                subcategory_id, user_id
+            )

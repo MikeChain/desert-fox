@@ -37,5 +37,20 @@ def test_admin_create_subcategory(client, admin_tokens, category):
         headers={"Authorization": f"Bearer {admin_tokens['access_token']}"},
         json=subcategory_data,
     )
-    print(response.json)
     assert response.status_code == 201
+
+
+def test_get_default_subcategory(client, auth_tokens, default_subcategory):
+    response = client.get(
+        "/api/v1/subcategories/1bc759c6-60bf-4c25-bb80-7507e08e1ae2",
+        headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
+    )
+    assert response.status_code == 200
+
+
+def test_get_non_default_subcategory(client, auth_tokens, subcategory):
+    response = client.get(
+        "/api/v1/subcategories/1bc759c6-60bf-4c25-bb80-7507e08e1ae2",
+        headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
+    )
+    assert response.status_code == 404
