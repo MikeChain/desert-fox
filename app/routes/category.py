@@ -42,7 +42,7 @@ class Category(MethodView):
 
 
 @bp.route("/<uuid:category_id>")
-class Account(MethodView):
+class SingleCategory(MethodView):
     @jwt_required()
     @bp.response(200, CategoriesSchema)
     def get(self, category_id):
@@ -63,6 +63,6 @@ class Account(MethodView):
                 category_data, category_id
             )
         except AlreadyExistsError:
-            abort(409, message="Account already exists.")
+            abort(409, message="Category already exists.")
 
         return category
