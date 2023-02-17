@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.exceptions import AlreadyExistsError, DatabaseError
@@ -28,6 +30,9 @@ class CategoriesService:
 
         if category:
             raise AlreadyExistsError("Category already exists.")
+
+        if "id" in category_data:
+            category_data["id"] = uuid.UUID(category_data["id"]).hex
 
         category = self.model(**category_data)
 

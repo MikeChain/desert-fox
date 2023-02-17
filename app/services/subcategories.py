@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.exceptions import AlreadyExistsError, DatabaseError
@@ -28,6 +30,9 @@ class SubcategoriesService:
 
         if subcategory:
             raise AlreadyExistsError("Subcategory already exists.")
+
+        if "id" in subcategory_data:
+            subcategory_data["id"] = uuid.UUID(subcategory_data["id"]).hex
 
         subcategory = self.model(**subcategory_data)
 

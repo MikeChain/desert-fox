@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.exceptions import DatabaseError
@@ -13,6 +15,9 @@ class TransactionsService:
         return self.model.query.filter_by(user_id=user_id).all()
 
     def create_transaction(self, transaction_data):
+        if "id" in transaction_data:
+            transaction_data["id"] = uuid.UUID(transaction_data["id"]).hex
+
         transaction = self.model(**transaction_data)
 
         try:
