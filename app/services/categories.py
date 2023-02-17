@@ -1,5 +1,6 @@
 import uuid
 
+from flask_smorest import abort
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.exceptions import AlreadyExistsError, DatabaseError
@@ -18,7 +19,10 @@ class CategoriesService:
         return self.model.query.filter_by(type=type).all()
 
     def get_category(self, category_id):
-        return self.model.query.filter_by(id=category_id).first()
+        category = self.model.query.filter_by(id=category_id).first()
+        if not category:
+            abort(404, message="This is not the category you are looking for.")
+        return category
 
     def get_category_by_name(self, category_name):
         return self.model.query.filter_by(name=category_name).first()
@@ -45,7 +49,15 @@ class CategoriesService:
         return category
 
     def update_category(self, category_data, category_id):
-        category = self.get_category(category_id)
+        category = self.get_category_by_name(
+            category_name=category_data["name"]
+        )
+
+        if category and category.id != category_id:
+            raise AlreadyExistsError("Category already exists.")
+
+        if not category:
+            category = self.get_category(category_id)
 
         if "name" in category_data:
             category.name = category_data["name"]

@@ -28,7 +28,7 @@ class Category(MethodView):
         claims = get_jwt()
         u_type = claims["u_type"]
 
-        if claims["u_type"] != "admin":
+        if u_type != "admin":
             abort(401, message="You shall not pass.")
 
         try:
@@ -37,5 +37,29 @@ class Category(MethodView):
             abort(409, message="Account already exists.")
         except DatabaseError:
             abort(500, message="Our engineering monkeys are having trouble")
+
+        return category
+
+
+@bp.route("/<uuid:category_id>")
+class Account(MethodView):
+    @jwt_required()
+    @bp.response(200, CategoriesSchema)
+    def get(self, category_id):
+        return CategoriesService().get_category(category_id)
+
+    @jwt_required(fresh=True)
+    @bp.arguments(UpdateCategoriesSchema)
+    @bp.response(201, CategoriesSchema)
+    def put(self, category_data, category_id):
+        claims = get_jwt()
+        u_type = claims["u_type"]
+
+        if u_type != "admin":
+            abort(401, message="You shall not pass.")
+
+        category = CategoriesService().update_category(
+            category_data, category_id
+        )
 
         return category
