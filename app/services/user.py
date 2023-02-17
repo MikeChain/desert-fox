@@ -100,11 +100,18 @@ class UserService:
     def update(self, user_data, user_id):
         user = self.get_user_404(user_id)
 
+        if "name" in user_data:
+            u = self.get_user_by_email(user_data["email"])
+
+            if u and user_id != u.id:
+                raise AlreadyExistsError("Email already exists.")
+            user.email = user_data.get("email", user.email)
+
         if "password" in user_data:
             user.password = self._hash_password(user_data["password"])
 
         user.display_name = user_data.get("display_name", user.display_name)
-        user.email = user_data.get("email", user.email)
+
         user.preferred_language_code = user_data.get(
             "preferred_language_code", user.preferred_language_code
         )

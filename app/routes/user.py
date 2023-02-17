@@ -2,7 +2,7 @@ from flask.views import MethodView
 from flask_jwt_extended import get_jwt, jwt_required
 from flask_smorest import Blueprint, abort
 
-from app.exceptions import DatabaseError
+from app.exceptions import AlreadyExistsError, DatabaseError
 from app.schemas import UserSchema, UserUpdateSchema
 from app.services import UserService
 
@@ -38,6 +38,8 @@ class User(MethodView):
     def put(self, user_data, user_id):
         try:
             user = UserService().update(user_data, user_id)
+        except AlreadyExistsError:
+            abort(409, message="Email already exists.")
         except DatabaseError:
             abort(500, message="Our engineering monkeys are having trouble")
 

@@ -58,8 +58,11 @@ class Account(MethodView):
         if u_type != "admin":
             abort(401, message="You shall not pass.")
 
-        category = CategoriesService().update_category(
-            category_data, category_id
-        )
+        try:
+            category = CategoriesService().update_category(
+                category_data, category_id
+            )
+        except AlreadyExistsError:
+            abort(409, message="Account already exists.")
 
         return category

@@ -53,6 +53,10 @@ class Account(MethodView):
     @bp.response(200, AccountSchema)
     def put(self, account_data, account_id):
         current_user = get_jwt_identity()
-        return AccountsService().update_account(
-            account_data, account_id, current_user
-        )
+        try:
+            account = AccountsService().update_account(
+                account_data, account_id, current_user
+            )
+        except AlreadyExistsError:
+            abort(409, message="Account already exists.")
+        return account

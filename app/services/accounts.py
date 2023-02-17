@@ -49,6 +49,10 @@ class AccountsService:
         account = self.get_account(account_id, user_id)
 
         if "name" in account_data:
+            acc = self.get_account_by_name(account_data["name"], user_id)
+
+            if acc and account_id != acc.id:
+                raise AlreadyExistsError("Account already exists.")
             account.name = account_data["name"]
 
         if "account_type" in account_data:
