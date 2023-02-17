@@ -59,3 +59,28 @@ def test_create_bad_account(client, auth_tokens, account):
     )
 
     assert response.status_code == 422
+
+
+def test_get_account(client, auth_tokens, account):
+    response = client.get(
+        "/api/v1/accounts/c4fcca77-7731-4fec-9c7f-56c111e97075",
+        headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
+    )
+    assert response.status_code == 200
+
+    assert response.json["name"] == "test_account"
+    assert response.json["account_type"] == "cash"
+    assert response.json["currency"] == "MXN"
+
+
+def test_update_account(client, auth_tokens, account):
+    response = client.put(
+        "/api/v1/accounts/c4fcca77-7731-4fec-9c7f-56c111e97075",
+        headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
+        json={"name": "test account updated"},
+    )
+    assert response.status_code == 200
+
+    assert response.json["name"] == "test account updated"
+    assert response.json["account_type"] == "cash"
+    assert response.json["currency"] == "MXN"
