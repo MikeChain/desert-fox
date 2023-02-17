@@ -61,8 +61,8 @@ class UserLogout(MethodView):
 
     @jwt_required()
     def post(self):
-        jti = get_jwt()["jti"]
-        self.redis_client.sadd("jwt:blocklist", jti)
+        self.redis_client.sadd("jwt:blocklist", get_jwt()["jti"])
+        self.redis_client.sadd("jwt:blocklist", get_jwt()["r_jti"])
 
         return {"message": "Successfully logged out."}
 
@@ -76,9 +76,11 @@ class TokenRefresh(MethodView):
     def post(self):
         current_user = get_jwt_identity()
         claims = get_jwt()
+        jti = claims["jti"]
         additional_claims = {
             "u_type": claims["u_type"],
             "lang": claims["lang"],
+            "r_jti": jti,
         }
         new_token = create_access_token(
             identity=current_user,
@@ -87,7 +89,6 @@ class TokenRefresh(MethodView):
         )
 
         # Para refrescar el token una vez y poner el refresh token bloqueado
-        jti = get_jwt()["jti"]
         self.redis_client.sadd("jwt:blocklist", jti)
 
         return {"access_token": new_token}

@@ -1,7 +1,11 @@
 import uuid
 from datetime import date
 
-from flask_jwt_extended import create_access_token, create_refresh_token
+from flask_jwt_extended import (
+    create_access_token,
+    create_refresh_token,
+    decode_token,
+)
 from passlib.hash import pbkdf2_sha512
 from sqlalchemy.exc import SQLAlchemyError
 
@@ -78,14 +82,16 @@ class UserService:
             "u_type": user.user_type,
             "lang": user.preferred_language_code,
         }
+        refresh_token = create_refresh_token(
+            identity=user.id, additional_claims=additional_claims
+        )
+
+        additional_claims["r_jti"] = decode_token(refresh_token)["jti"]
+
         access_token = create_access_token(
             identity=user.id,
             fresh=True,
             additional_claims=additional_claims,
-        )
-
-        refresh_token = create_refresh_token(
-            identity=user.id, additional_claims=additional_claims
         )
 
         return {
