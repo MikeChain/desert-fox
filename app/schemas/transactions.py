@@ -7,7 +7,7 @@ class PlainTransactionSchema(Schema):
         required=True, validate=validate.OneOf(["income", "expense"])
     )
     status = fields.String(
-        required=True,
+        dump_only=True,
         validate=validate.OneOf(["pending", "verified", "rejected"]),
     )
     total_amount = fields.Number(dump_only=True)

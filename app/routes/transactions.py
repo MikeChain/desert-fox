@@ -2,7 +2,7 @@ from flask.views import MethodView
 from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required
 from flask_smorest import Blueprint, abort
 
-from app.exceptions import AlreadyExistsError, DatabaseError, TotalMismatchError
+from app.exceptions import DatabaseError, TotalMismatchError
 from app.schemas import TransactionSchema
 from app.services import TransactionsService
 
@@ -33,8 +33,6 @@ class Transactions(MethodView):
             )
         except TotalMismatchError:
             abort(400, message="Transaction amount and payment do not match.")
-        except AlreadyExistsError:
-            abort(409, message="Transaction already exists.")
         except DatabaseError:
             abort(500, message="Our engineering monkeys are having trouble")
 
@@ -42,5 +40,4 @@ class Transactions(MethodView):
 
 
 # GET /transactions/<transaction_id>: para obtener información detallada de una transacción específica
-# POST /transactions: para crear una nueva transacción
 # PUT /transactions/<transaction_id>: para actualizar información de una transacción existente
