@@ -32,7 +32,13 @@ class TransactionSchema(PlainTransactionSchema):
     transaction_details = fields.List(
         fields.Nested(PlainTransactionDetailsSchema)
     )
-    accounts = fields.List(fields.Nested(PaymentAccountsSchema))
+    payment_accounts = fields.List(
+        fields.Nested(PaymentAccountsSchema), load_only=True
+    )
+    account_details = fields.List(
+        fields.Nested(AccountSchema, only=("name", "account_type", "currency")),
+        dump_only=True,
+    )
 
 
 class UpdateTransactionSchema(PlainTransactionUpdateSchema):

@@ -10,7 +10,7 @@ class PlainTransactionSchema(Schema):
         required=True,
         validate=validate.OneOf(["pending", "verified", "rejected"]),
     )
-    total_amount = fields.Number(required=True)
+    total_amount = fields.Number(dump_only=True)
     transaction_date = fields.DateTime(required=True)
     notes = fields.String()
 
@@ -20,6 +20,5 @@ class PlainTransactionUpdateSchema(Schema):
     status = fields.String(
         validate=validate.OneOf(["pending", "verified", "rejected"])
     )
-    total_amount = fields.Number()
     transaction_date = fields.DateTime()
     notes = fields.String()
