@@ -1,6 +1,6 @@
 from marshmallow import fields
 
-from .accounts import AccountSchema, UpdateAccountSchema
+from .accounts import AccountSchema, SimpleAccountSchema, UpdateAccountSchema
 from .categories import CategoriesSchema, UpdateCategoriesSchema
 from .subcategories import PlainSubcategoriesSchema
 from .transaction_details import (
@@ -36,7 +36,7 @@ class TransactionSchema(PlainTransactionSchema):
         fields.Nested(PaymentAccountsSchema), load_only=True
     )
     account_details = fields.List(
-        fields.Nested(AccountSchema, only=("name", "account_type", "currency")),
+        fields.Nested(SimpleAccountSchema),
         dump_only=True,
     )
 

@@ -13,6 +13,12 @@ class AccountSchema(Schema):
     initial_balance = fields.Decimal()
 
 
+class SimpleAccountSchema(Schema):
+    name = fields.String()
+    account_type = fields.String()
+    currency = fields.String()
+
+
 class UpdateAccountSchema(Schema):
     name = fields.String()
     account_type = fields.String(

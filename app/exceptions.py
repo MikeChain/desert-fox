@@ -12,3 +12,7 @@ class UserNotFoundException(Exception):
 
 class AuthenticationFailedException(Exception):
     pass
+
+
+class TotalMismatchError(Exception):
+    pass
