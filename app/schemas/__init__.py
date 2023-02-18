@@ -4,6 +4,7 @@ from .accounts import AccountSchema, UpdateAccountSchema
 from .categories import CategoriesSchema, UpdateCategoriesSchema
 from .subcategories import PlainSubcategoriesSchema
 from .transaction_details import (
+    PaymentAccountsSchema,
     PlainTransactionDetailsSchema,
     PlainTransactionDetailsUpdateSchema,
 )
@@ -31,6 +32,7 @@ class TransactionSchema(PlainTransactionSchema):
     transaction_details = fields.List(
         fields.Nested(PlainTransactionDetailsSchema)
     )
+    accounts = fields.List(fields.Nested(PaymentAccountsSchema))
 
 
 class UpdateTransactionSchema(PlainTransactionUpdateSchema):

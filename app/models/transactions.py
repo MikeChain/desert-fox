@@ -41,9 +41,9 @@ class TransactionsModel(db.Model):
         back_populates="transaction",
         cascade="all, delete",
     )
-    transaction_accounts = db.relationship(
-        "PaymentAccountsModel",
+    accounts = db.relationship(
+        "AccountsModel",
+        secondary="payment_accounts",
+        back_populates="transactions",
         lazy="dynamic",
-        back_populates="transaction",
-        cascade="all, delete",
     )

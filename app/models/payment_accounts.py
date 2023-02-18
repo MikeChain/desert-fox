@@ -18,12 +18,5 @@ class PaymentAccountsModel(db.Model):
         db.Numeric(precision=20, scale=4), nullable=False
     )
 
-    transaction = db.relationship(
-        "TransactionsModel", back_populates="transaction_accounts"
-    )
-    accounts = db.relationship(
-        "AccountsModel", back_populates="transaction_accounts"
-    )
-
     db.Index("transaction_account_index", transaction_id),
     db.Index("account_index", account_id)

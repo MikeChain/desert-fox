@@ -35,9 +35,9 @@ class AccountsModel(db.Model):
 
     db.Index("accounts_user_id_index", user_id)
     user = db.relationship("UserModel", back_populates="accounts")
-    transaction_accounts = db.relationship(
-        "PaymentAccountsModel",
-        lazy="dynamic",
+    transactions = db.relationship(
+        "TransactionsModel",
+        secondary="payment_accounts",
         back_populates="accounts",
-        cascade="all, delete",
+        lazy="dynamic",
     )

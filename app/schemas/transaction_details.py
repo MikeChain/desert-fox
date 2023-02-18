@@ -1,4 +1,4 @@
-from marshmallow import Schema, fields, validate
+from marshmallow import Schema, fields
 
 
 class PlainTransactionDetailsSchema(Schema):
@@ -12,3 +12,8 @@ class PlainTransactionDetailsUpdateSchema(Schema):
     subcategory_id = fields.UUID()
     description = fields.String()
     amount = fields.Number()
+
+
+class PaymentAccountsSchema(Schema):
+    account_id = fields.UUID(dump_only=True)
+    subtotal_amount = fields.Number(required=True)
