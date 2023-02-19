@@ -14,9 +14,7 @@ def test_create_bad_transaction(client, auth_tokens):
     data = {
         "type": "expense",
         "transaction_date": "2023-01-01T00:00:00",
-        "payment_accounts": [
-            {"account_id": uuid.uuid4(), "subtotal_amount": 15}
-        ],
+        "accounts": [{"account_id": uuid.uuid4(), "subtotal_amount": 15}],
         "transaction_details": [
             {
                 "subcategory_id": uuid.uuid4(),
@@ -39,9 +37,7 @@ def test_create_transaction_with_unexistent_keys(client, auth_tokens):
     data = {
         "type": "expense",
         "transaction_date": "2023-01-01T00:00:00",
-        "payment_accounts": [
-            {"account_id": uuid.uuid4(), "subtotal_amount": 15}
-        ],
+        "accounts": [{"account_id": uuid.uuid4(), "subtotal_amount": 15}],
         "transaction_details": [
             {
                 "subcategory_id": uuid.uuid4(),
@@ -69,7 +65,7 @@ def test_create_good_transaction(client, transaction_data):
     data = {
         "type": "expense",
         "transaction_date": "2023-01-01T00:00:00",
-        "payment_accounts": [
+        "accounts": [
             {
                 "account_id": "c4fcca77-7731-4fec-9c7f-56c111e97075",
                 "subtotal_amount": 15,

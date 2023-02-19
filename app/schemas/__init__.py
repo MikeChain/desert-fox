@@ -28,17 +28,15 @@ class CategoriesWithSubSchema(CategoriesSchema):
     )
 
 
+class AccountData(PaymentAccountsSchema):
+    accounts = fields.Nested(SimpleAccountSchema, dump_only=True)
+
+
 class TransactionSchema(PlainTransactionSchema):
     transaction_details = fields.List(
         fields.Nested(PlainTransactionDetailsSchema)
     )
-    payment_accounts = fields.List(
-        fields.Nested(PaymentAccountsSchema), load_only=True
-    )
-    account_details = fields.List(
-        fields.Nested(SimpleAccountSchema),
-        dump_only=True,
-    )
+    accounts = fields.List(fields.Nested(AccountData))
 
 
 class UpdateTransactionSchema(PlainTransactionUpdateSchema):

@@ -17,3 +17,4 @@ class PlainTransactionDetailsUpdateSchema(Schema):
 class PaymentAccountsSchema(Schema):
     account_id = fields.UUID(load_only=True)
     subtotal_amount = fields.Number(required=True)
+    type = fields.String(load_only=True)

@@ -17,6 +17,9 @@ class PaymentAccountsModel(db.Model):
     subtotal_amount = db.Column(
         db.Numeric(precision=20, scale=4), nullable=False
     )
+    type = db.Column(
+        db.Enum("income", "expense", name="transaction_type"), nullable=False
+    )
 
     db.Index("transaction_account_index", transaction_id),
     db.Index("account_index", account_id)

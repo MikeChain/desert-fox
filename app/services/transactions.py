@@ -28,7 +28,7 @@ class TransactionsService:
             transaction_data["id"] = uuid.uuid4()
 
         t_id = transaction_data["id"]
-        print(t_id)
+        t_type = transaction_data["type"]
 
         details = self._get_details(
             self.details,
@@ -38,9 +38,12 @@ class TransactionsService:
 
         accounts = self._get_details(
             self.accounts,
-            transaction_data["payment_accounts"],
+            transaction_data["accounts"],
             t_id,
         )
+
+        for account in accounts:
+            account.type = t_type
 
         total_d = sum(d.amount for d in details)
         total_a = sum(a.subtotal_amount for a in accounts)
@@ -49,7 +52,7 @@ class TransactionsService:
             raise TotalMismatchError
 
         del transaction_data["transaction_details"]
-        del transaction_data["payment_accounts"]
+        del transaction_data["accounts"]
 
         transaction_data["total_amount"] = total_a
         transaction_data["status"] = "pending"
