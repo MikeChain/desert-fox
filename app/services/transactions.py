@@ -27,16 +27,19 @@ class TransactionsService:
         else:
             transaction_data["id"] = uuid.uuid4()
 
+        t_id = transaction_data["id"]
+        print(t_id)
+
         details = self._get_details(
             self.details,
             transaction_data["transaction_details"],
-            transaction_data["id"],
+            t_id,
         )
 
         accounts = self._get_details(
             self.accounts,
             transaction_data["payment_accounts"],
-            transaction_data["id"],
+            t_id,
         )
 
         total_d = sum(d.amount for d in details)
@@ -55,13 +58,8 @@ class TransactionsService:
 
         try:
             db.session.add(transaction)
-
-            for d in details:
-                db.session.add(d)
-
-            for a in accounts:
-                db.session.add(a)
-
+            db.session.add_all(details)
+            db.session.add_all(accounts)
             db.session.commit()
         except SQLAlchemyError:
             raise DatabaseError

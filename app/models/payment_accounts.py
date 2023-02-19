@@ -20,3 +20,7 @@ class PaymentAccountsModel(db.Model):
 
     db.Index("transaction_account_index", transaction_id),
     db.Index("account_index", account_id)
+    transactions = db.relationship(
+        "TransactionsModel", back_populates="accounts"
+    )
+    accounts = db.relationship("AccountsModel", back_populates="transactions")
