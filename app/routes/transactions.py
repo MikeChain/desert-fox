@@ -37,7 +37,3 @@ class Transactions(MethodView):
             abort(500, message="Our engineering monkeys are having trouble")
 
         return transaction
-
-
-# GET /transactions/<transaction_id>: para obtener información detallada de una transacción específica
-# PUT /transactions/<transaction_id>: para actualizar información de una transacción existente
