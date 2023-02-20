@@ -211,6 +211,7 @@ def transaction(category):
                 {
                     "account_id": "c4fcca77-7731-4fec-9c7f-56c111e97075",
                     "subtotal_amount": 15,
+                    "id": "ae93915c-bd48-4d40-bad9-1a3a03689a12",
                 }
             ],
             "transaction_details": [
@@ -218,6 +219,7 @@ def transaction(category):
                     "subcategory_id": "1bc759c6-60bf-4c25-bb80-7507e08e1ae2",
                     "description": "test",
                     "amount": 15,
+                    "id": "dd42f328-f0d6-4091-ae22-72ff088b18e4",
                 }
             ],
         }

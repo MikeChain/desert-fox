@@ -4,7 +4,9 @@ from .accounts import AccountSchema, SimpleAccountSchema, UpdateAccountSchema
 from .categories import CategoriesSchema, UpdateCategoriesSchema
 from .subcategories import PlainSubcategoriesSchema
 from .transaction_details import (
+    DetailsSchema,
     PaymentAccountsSchema,
+    PaymentUpdateSchema,
     PlainTransactionDetailsSchema,
     PlainTransactionDetailsUpdateSchema,
 )

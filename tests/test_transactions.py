@@ -142,3 +142,46 @@ def test_update_transaction(client, transaction):
     )
 
     assert response.status_code == 405
+
+
+def test_get_transaction_details(client, transaction):
+    response = client.get(
+        "/api/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043/details",
+        headers={"Authorization": f"Bearer {transaction['access_token']}"},
+    )
+
+    assert response.status_code == 200
+    json = response.json
+
+    assert "accounts" in json
+    assert "transaction_details" in json
+    assert len(json) == 2
+
+
+def test_update_transaction_details(client, transaction):
+    update_data = {
+        "transaction_details": [
+            {
+                "amount": 20.0,
+                "description": "test",
+                "id": "dd42f328-f0d6-4091-ae22-72ff088b18e4",
+            }
+        ],
+        "accounts": [
+            {
+                "subtotal_amount": 20,
+                "id": "ae93915c-bd48-4d40-bad9-1a3a03689a12",
+            }
+        ],
+    }
+    response = client.put(
+        "/api/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043/details",
+        headers={"Authorization": f"Bearer {transaction['access_token']}"},
+        json=update_data,
+    )
+
+    assert response.status_code == 200
+    json = response.json
+
+    assert json["accounts"][0]["subtotal_amount"] == 20
+    assert json["transaction_details"][0]["amount"] == 20

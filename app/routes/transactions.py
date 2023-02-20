@@ -1,9 +1,13 @@
 from flask.views import MethodView
-from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_smorest import Blueprint, abort
 
 from app.exceptions import DatabaseError, TotalMismatchError
-from app.schemas import PlainTransactionUpdateSchema, TransactionSchema
+from app.schemas import (
+    DetailsSchema,
+    PlainTransactionUpdateSchema,
+    TransactionSchema,
+)
 from app.services import TransactionsService
 
 bp = Blueprint(
@@ -40,7 +44,7 @@ class Transactions(MethodView):
 
 
 @bp.route("/<uuid:transaction_id>")
-class SingleSubcategory(MethodView):
+class SingleTransaction(MethodView):
     @jwt_required()
     @bp.response(200, TransactionSchema)
     def get(self, transaction_id):
@@ -55,3 +59,31 @@ class SingleSubcategory(MethodView):
         return TransactionsService().update_transaction(
             transaction_data, transaction_id, user_id
         )
+
+
+@bp.route("/<uuid:transaction_id>/details")
+class SingleTransactionDetails(MethodView):
+    @jwt_required()
+    @bp.response(200, DetailsSchema)
+    def get(self, transaction_id):
+        user_id = get_jwt_identity()
+        return TransactionsService().get_transaction(transaction_id, user_id)
+
+    @jwt_required()
+    @bp.arguments(DetailsSchema)
+    @bp.response(200, TransactionSchema)
+    def put(self, details_data, transaction_id):
+        user_id = get_jwt_identity()
+        try:
+            details = TransactionsService().update_details(
+                details_data, transaction_id, user_id
+            )
+        except TotalMismatchError:
+            abort(400, message="Transaction amount and payment do not match.")
+        except DatabaseError:
+            abort(
+                500,
+                message="Good news, everyone! Our servers are experiencing technical difficulties.",
+            )
+
+        return details

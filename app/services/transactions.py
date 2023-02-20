@@ -1,3 +1,4 @@
+import decimal
 import uuid
 
 from flask_smorest import abort
@@ -10,6 +11,7 @@ from app.models import (
     TransactionDetailsModel,
     TransactionsModel,
 )
+from app.services.subcategories import SubcategoriesService
 
 
 class TransactionsService:
@@ -43,13 +45,13 @@ class TransactionsService:
         t_id = transaction_data["id"]
         t_type = transaction_data["type"]
 
-        details = self._get_details(
+        details = self._create_details(
             self.details,
             transaction_data["transaction_details"],
             t_id,
         )
 
-        accounts = self._get_details(
+        accounts = self._create_details(
             self.accounts,
             transaction_data["accounts"],
             t_id,
@@ -58,11 +60,7 @@ class TransactionsService:
         for account in accounts:
             account.type = t_type
 
-        total_d = sum(d.amount for d in details)
-        total_a = sum(a.subtotal_amount for a in accounts)
-
-        if abs(total_a - total_d) > self.tolerance:
-            raise TotalMismatchError
+        total_a = self._get_totals(details, accounts)
 
         del transaction_data["transaction_details"]
         del transaction_data["accounts"]
@@ -85,13 +83,7 @@ class TransactionsService:
     def update_transaction(
         self, transaction_data, transaction_id, user_id
     ) -> TransactionsModel:
-        transaction = self.get_transaction(transaction_id, user_id)
-
-        if transaction.status != "pending":
-            abort(
-                405,
-                message="This transaction has already made an offer it couldn't refuse.",
-            )
+        transaction = self._get_transaction_for_update(transaction_id, user_id)
 
         if "status" in transaction_data:
             transaction.status = transaction_data["status"]
@@ -110,8 +102,99 @@ class TransactionsService:
 
         return transaction
 
+    def update_details(
+        self, details_data, transaction_id, user_id
+    ) -> TransactionsModel:
+        transaction = self._get_transaction_for_update(transaction_id, user_id)
+
+        accounts = self._get_accounts(transaction_id)
+        details = self._get_details(transaction_id)
+
+        if "accounts" in details_data:
+            for account in details_data["accounts"]:
+                accounts[account["id"]].subtotal_amount = account[
+                    "subtotal_amount"
+                ]
+
+        if "transaction_details" in details_data:
+            for detail in details_data["transaction_details"]:
+                if "subcategory_id" in detail:
+                    sbc = detail["subcategory_id"]
+                    if SubcategoriesService().get_subcategory(sbc, user_id):
+                        details[detail["id"]].subcategory_id = sbc
+
+                if "description" in detail:
+                    details[detail["id"]].description = detail["description"]
+
+                if "amount" in detail:
+                    details[detail["id"]].amount = detail["amount"]
+
+        total = self._get_totals(
+            list(details.values()), list(accounts.values())
+        )
+
+        try:
+            if abs(transaction.total_amount - total) > self.tolerance:
+                transaction.total_amount = total
+
+                db.session.add(transaction)
+
+            db.session.add_all(
+                [
+                    accounts[account["id"]]
+                    for account in details_data["accounts"]
+                ]
+            )
+            db.session.add_all(
+                [
+                    details[detail["id"]]
+                    for detail in details_data["transaction_details"]
+                ]
+            )
+            db.session.commit()
+        except SQLAlchemyError:
+            raise DatabaseError
+
+        return transaction
+
     @staticmethod
-    def _get_details(
+    def _create_details(
         model, data, id
     ) -> list[PaymentAccountsModel | TransactionDetailsModel]:
         return [model(**x, transaction_id=id) for x in data]
+
+    def _get_totals(self, details: list, accounts: list) -> decimal.Decimal:
+        total_d = sum(d.amount for d in details)
+        total_a = sum(a.subtotal_amount for a in accounts)
+
+        if abs(total_a - total_d) > self.tolerance:
+            raise TotalMismatchError
+
+        return decimal.Decimal(total_a)
+
+    def _get_transaction_for_update(
+        self, transaction_id, user_id
+    ) -> TransactionsModel:
+        transaction = self.get_transaction(transaction_id, user_id)
+
+        if transaction.status != "pending":
+            abort(
+                405,
+                message="This transaction has already made an offer it couldn't refuse.",
+            )
+
+        return transaction
+
+    def _get_accounts(self, transaction_id):
+        accounts = self.accounts.query.filter_by(
+            transaction_id=transaction_id
+        ).all()
+
+        return {a.id: a for a in accounts}
+
+    def _get_details(self, transaction_id):
+        details = self.details.query.filter_by(
+            transaction_id=transaction_id
+        ).all()
+
+        return {d.id: d for d in details}
