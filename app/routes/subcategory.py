@@ -44,12 +44,11 @@ class Subcategory(MethodView):
 
         return subcategory
 
-    @bp.route("/<uuid:subcategory_id>")
-    class SingleSubcategory(MethodView):
-        @jwt_required()
-        @bp.response(200, SubcategoriesSchema)
-        def get(self, subcategory_id):
-            user_id = get_jwt_identity()
-            return SubcategoriesService().get_subcategory(
-                subcategory_id, user_id
-            )
+
+@bp.route("/<uuid:subcategory_id>")
+class SingleSubcategory(MethodView):
+    @jwt_required()
+    @bp.response(200, SubcategoriesSchema)
+    def get(self, subcategory_id):
+        user_id = get_jwt_identity()
+        return SubcategoriesService().get_subcategory(subcategory_id, user_id)
