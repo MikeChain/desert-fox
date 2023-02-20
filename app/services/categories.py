@@ -3,14 +3,19 @@ import uuid
 from flask_smorest import abort
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.exceptions import AlreadyExistsError, DatabaseError
+from app.exceptions import AlreadyExistsError, DatabaseError, ResourceInUseError
 from app.extensions import db
 from app.models import CategoriesModel
+from app.models.subcategories import SubcategoriesModel
 
 
 class CategoriesService:
     def __init__(self):
         self.model = CategoriesModel
+        self.subs = SubcategoriesModel
+
+    def get_subcategories(self, category_id) -> list[SubcategoriesModel]:
+        return self.subs.query.filter_by(category_id=category_id).all()
 
     def get_all_categories(self):
         return self.model.query.all()
@@ -72,3 +77,19 @@ class CategoriesService:
             raise DatabaseError
 
         return category
+
+    def delete_category(self, category_id) -> bool:
+        category = self.get_category(category_id)
+
+        subcategories = self.get_subcategories(category_id)
+
+        if len(subcategories) > 0:
+            raise ResourceInUseError
+
+        try:
+            db.session.delete(category)
+            db.session.commit()
+        except SQLAlchemyError:
+            raise DatabaseError
+
+        return True

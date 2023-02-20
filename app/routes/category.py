@@ -2,7 +2,7 @@ from flask.views import MethodView
 from flask_jwt_extended import get_jwt, jwt_required
 from flask_smorest import Blueprint, abort
 
-from app.exceptions import AlreadyExistsError, DatabaseError
+from app.exceptions import AlreadyExistsError, DatabaseError, ResourceInUseError
 from app.schemas import CategoriesSchema, UpdateCategoriesSchema
 from app.services import CategoriesService
 
@@ -66,3 +66,29 @@ class SingleCategory(MethodView):
             abort(409, message="Category already exists.")
 
         return category
+
+    @jwt_required(fresh=True)
+    def delete(self, category_id):
+        claims = get_jwt()
+        u_type = claims["u_type"]
+
+        if u_type != "admin":
+            abort(
+                401,
+                message="Nice try, slick. But you're not getting in without proper authorization.",
+            )
+
+        try:
+            CategoriesService().delete_category(category_id)
+        except ResourceInUseError:
+            abort(
+                400,
+                message="The fault, dear user, is not in our server, but in ourselves, that we attempt to delete a referenced category.",
+            )
+        except DatabaseError:
+            abort(
+                500,
+                message="Good news, everyone! Our servers are experiencing technical difficulties.",
+            )
+
+        return {"message": "Category deleted!"}

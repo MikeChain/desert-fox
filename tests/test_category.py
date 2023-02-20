@@ -96,3 +96,41 @@ def test_admin_update_category(client, admin_tokens, category):
     assert json["name"] == "new name"
     assert json["description"] == "new description"
     assert json["type"] == "income"
+
+
+def test_admin_delete_category(client, admin_tokens, category):
+    response = client.delete(
+        "/api/v1/categories/1948b81b-42bf-4ea8-87f0-61a1416e3ffa",
+        headers={"Authorization": f"Bearer {admin_tokens['access_token']}"},
+    )
+    assert response.status_code == 200
+    json = response.json
+    assert json["message"] == "Category deleted!"
+
+
+def test_no_admin_delete_category(client, transaction):
+    response = client.delete(
+        "/api/v1/categories/1948b81b-42bf-4ea8-87f0-61a1416e3ffa",
+        headers={"Authorization": f"Bearer {transaction['access_token']}"},
+    )
+    assert response.status_code == 401
+    json = response.json
+    assert (
+        json["message"]
+        == "Nice try, slick. But you're not getting in without proper authorization."
+    )
+
+
+def test_no_admin_delete_category(client, admin_category_in_use):
+    response = client.delete(
+        "/api/v1/categories/1948b81b-42bf-4ea8-87f0-61a1416e3ffa",
+        headers={
+            "Authorization": f"Bearer {admin_category_in_use['access_token']}"
+        },
+    )
+    assert response.status_code == 400
+    json = response.json
+    assert (
+        json["message"]
+        == "The fault, dear user, is not in our server, but in ourselves, that we attempt to delete a referenced category."
+    )
