@@ -1,23 +1,36 @@
 import uuid
 
+from flask_smorest import abort
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.exceptions import AlreadyExistsError, DatabaseError
+from app.exceptions import AlreadyExistsError, DatabaseError, ResourceInUseError
 from app.extensions import db
-from app.models import AccountsModel
+from app.models import AccountsModel, PaymentAccountsModel
 
 
 class AccountsService:
     def __init__(self):
         self.model = AccountsModel
+        self.payments = PaymentAccountsModel
+
+    def get_payments(self, account_id) -> list[PaymentAccountsModel]:
+        return self.payments.query.filter_by(account_id=account_id).all()
 
     def get_all_user_accounts(self, user_id):
         return self.model.query.filter_by(user_id=user_id).all()
 
-    def get_account(self, account_id, user_id):
-        return self.model.query.filter_by(
+    def get_account(self, account_id, user_id) -> AccountsModel:
+        account = self.model.query.filter_by(
             id=account_id, user_id=user_id
         ).first()
+
+        if account:
+            return account
+
+        abort(
+            404,
+            "Looks like you're barking up the wrong tree. The requested account cannot be found.",
+        )
 
     def get_account_by_name(self, name, user_id):
         return self.model.query.filter_by(user_id=user_id, name=name).first()
@@ -71,3 +84,19 @@ class AccountsService:
             raise DatabaseError
 
         return account
+
+    def delete_account(self, account_id, user_id) -> bool:
+        account = self.get_account(account_id, user_id)
+
+        payments = self.get_payments(account_id)
+
+        if len(payments) > 0:
+            raise ResourceInUseError
+
+        try:
+            db.session.delete(account)
+            db.session.commit()
+        except SQLAlchemyError:
+            raise DatabaseError
+
+        return True

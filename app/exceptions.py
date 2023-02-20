@@ -16,3 +16,7 @@ class AuthenticationFailedException(Exception):
 
 class TotalMismatchError(Exception):
     pass
+
+
+class ResourceInUseError(Exception):
+    pass

@@ -2,7 +2,7 @@ from flask.views import MethodView
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_smorest import Blueprint, abort
 
-from app.exceptions import AlreadyExistsError, DatabaseError
+from app.exceptions import AlreadyExistsError, DatabaseError, ResourceInUseError
 from app.schemas import AccountSchema, UpdateAccountSchema
 from app.services import AccountsService
 
@@ -60,3 +60,22 @@ class Account(MethodView):
         except AlreadyExistsError:
             abort(409, message="Account already exists.")
         return account
+
+    @jwt_required(fresh=True)
+    def delete(self, account_id):
+        current_user = get_jwt_identity()
+
+        try:
+            AccountsService().delete_account(account_id, current_user)
+        except ResourceInUseError:
+            abort(
+                400,
+                message="The fault, dear user, is not in our server, but in ourselves, that we attempt to delete a referenced resource.",
+            )
+        except DatabaseError:
+            abort(
+                500,
+                message="Good news, everyone! Our servers are experiencing technical difficulties.",
+            )
+
+        return {"message": "Account deleted!"}
