@@ -118,3 +118,27 @@ def test_get_transaction(client, transaction):
 
     assert "id" not in accounts[0]
     assert accounts[0]["subtotal_amount"] == 15
+
+
+def test_update_transaction(client, transaction):
+    transaction_data = {"status": "verified", "notes": "test notes"}
+    response = client.put(
+        "/api/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043",
+        headers={"Authorization": f"Bearer {transaction['access_token']}"},
+        json=transaction_data,
+    )
+
+    assert response.status_code == 200
+    json = response.json
+    assert json["id"] == "c22af559-6084-45dd-b3ae-8019c1707043"
+    assert json["type"] == "expense"
+    assert json["status"] == "verified"
+    assert json["notes"] == "test notes"
+
+    response = client.put(
+        "/api/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043",
+        headers={"Authorization": f"Bearer {transaction['access_token']}"},
+        json={"transaction_date": "2023-01-02T00:00:00"},
+    )
+
+    assert response.status_code == 405

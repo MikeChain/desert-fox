@@ -16,7 +16,6 @@ class PlainTransactionSchema(Schema):
 
 
 class PlainTransactionUpdateSchema(Schema):
-    type = fields.String(validate=validate.OneOf(["income", "expense"]))
     status = fields.String(
         validate=validate.OneOf(["pending", "verified", "rejected"])
     )

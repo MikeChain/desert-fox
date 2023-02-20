@@ -19,19 +19,22 @@ class TransactionsService:
         self.accounts = PaymentAccountsModel
         self.tolerance = 0.01
 
-    def get_all_user_transactions(self, user_id):
+    def get_all_user_transactions(self, user_id) -> list[TransactionsModel]:
         return self.model.query.filter_by(user_id=user_id).all()
 
-    def get_transaction(self, transaction_id, user_id):
+    def get_transaction(self, transaction_id, user_id) -> TransactionsModel:
         t = self.model.query.filter_by(
             id=transaction_id, user_id=user_id
         ).first()
 
         if t:
             return t
-        abort(404, "This is not the transaction you are looking for.")
+        abort(
+            404,
+            "Sorry, the transaction you are looking for is in another castle.",
+        )
 
-    def create_transaction(self, transaction_data):
+    def create_transaction(self, transaction_data) -> TransactionsModel:
         if "id" in transaction_data:
             transaction_data["id"] = uuid.UUID(transaction_data["id"]).hex
         else:
@@ -79,6 +82,36 @@ class TransactionsService:
 
         return transaction
 
+    def update_transaction(
+        self, transaction_data, transaction_id, user_id
+    ) -> TransactionsModel:
+        transaction = self.get_transaction(transaction_id, user_id)
+
+        if transaction.status != "pending":
+            abort(
+                405,
+                message="This transaction has already made an offer it couldn't refuse.",
+            )
+
+        if "status" in transaction_data:
+            transaction.status = transaction_data["status"]
+
+        if "transaction_date" in transaction_data:
+            transaction.transaction_date = transaction_data["transaction_date"]
+
+        if "notes" in transaction_data:
+            transaction.notes = transaction_data["notes"]
+
+        try:
+            db.session.add(transaction)
+            db.session.commit()
+        except SQLAlchemyError:
+            raise DatabaseError
+
+        return transaction
+
     @staticmethod
-    def _get_details(model, data, id):
+    def _get_details(
+        model, data, id
+    ) -> list[PaymentAccountsModel | TransactionDetailsModel]:
         return [model(**x, transaction_id=id) for x in data]

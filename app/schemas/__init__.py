@@ -37,9 +37,3 @@ class TransactionSchema(PlainTransactionSchema):
         fields.Nested(PlainTransactionDetailsSchema)
     )
     accounts = fields.List(fields.Nested(AccountData))
-
-
-class UpdateTransactionSchema(PlainTransactionUpdateSchema):
-    transaction_details = fields.List(
-        fields.Nested(PlainTransactionDetailsUpdateSchema)
-    )

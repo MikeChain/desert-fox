@@ -3,7 +3,7 @@ from flask_jwt_extended import get_jwt, get_jwt_identity, jwt_required
 from flask_smorest import Blueprint, abort
 
 from app.exceptions import DatabaseError, TotalMismatchError
-from app.schemas import TransactionSchema
+from app.schemas import PlainTransactionUpdateSchema, TransactionSchema
 from app.services import TransactionsService
 
 bp = Blueprint(
@@ -46,3 +46,12 @@ class SingleSubcategory(MethodView):
     def get(self, transaction_id):
         user_id = get_jwt_identity()
         return TransactionsService().get_transaction(transaction_id, user_id)
+
+    @jwt_required()
+    @bp.arguments(PlainTransactionUpdateSchema)
+    @bp.response(200, TransactionSchema)
+    def put(self, transaction_data, transaction_id):
+        user_id = get_jwt_identity()
+        return TransactionsService().update_transaction(
+            transaction_data, transaction_id, user_id
+        )
