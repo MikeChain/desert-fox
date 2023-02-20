@@ -70,7 +70,7 @@ class Account(MethodView):
         except ResourceInUseError:
             abort(
                 400,
-                message="The fault, dear user, is not in our server, but in ourselves, that we attempt to delete a referenced resource.",
+                message="The fault, dear user, is not in our server, but in ourselves, that we attempt to delete a referenced account.",
             )
         except DatabaseError:
             abort(

@@ -16,7 +16,7 @@ class AccountsService:
     def get_payments(self, account_id) -> list[PaymentAccountsModel]:
         return self.payments.query.filter_by(account_id=account_id).all()
 
-    def get_all_user_accounts(self, user_id):
+    def get_all_user_accounts(self, user_id) -> list[AccountsModel]:
         return self.model.query.filter_by(user_id=user_id).all()
 
     def get_account(self, account_id, user_id) -> AccountsModel:
@@ -32,10 +32,10 @@ class AccountsService:
             "Looks like you're barking up the wrong tree. The requested account cannot be found.",
         )
 
-    def get_account_by_name(self, name, user_id):
+    def get_account_by_name(self, name, user_id) -> AccountsModel:
         return self.model.query.filter_by(user_id=user_id, name=name).first()
 
-    def create_account(self, account_data, user_id):
+    def create_account(self, account_data, user_id) -> AccountsModel:
         account = self.get_account_by_name(account_data["name"], user_id)
 
         if account:
@@ -58,7 +58,9 @@ class AccountsService:
 
         return account
 
-    def update_account(self, account_data, account_id, user_id):
+    def update_account(
+        self, account_data, account_id, user_id
+    ) -> AccountsModel:
         account = self.get_account(account_id, user_id)
 
         if "name" in account_data:
