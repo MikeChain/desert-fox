@@ -37,3 +37,12 @@ class Transactions(MethodView):
             abort(500, message="Our engineering monkeys are having trouble")
 
         return transaction
+
+
+@bp.route("/<uuid:transaction_id>")
+class SingleSubcategory(MethodView):
+    @jwt_required()
+    @bp.response(200, TransactionSchema)
+    def get(self, transaction_id):
+        user_id = get_jwt_identity()
+        return TransactionsService().get_transaction(transaction_id, user_id)

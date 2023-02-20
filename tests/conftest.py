@@ -10,6 +10,7 @@ from app.services import (
     AccountsService,
     CategoriesService,
     SubcategoriesService,
+    TransactionsService,
     UserService,
 )
 from config import envs
@@ -174,4 +175,51 @@ def transaction_data(category):
         }
     )
     AccountsService().create_account(account_data, current_user_id)
+    return UserService().authenticate(user_email, user_password)
+
+
+@pytest.fixture()
+def transaction(category):
+    current_user_id = "7e4987c5-851f-4eda-89bc-fb8b8fbd518a"
+    user_email = "test_user@example.com"
+    user_password = "testpassword"
+    UserService().create_user(
+        {
+            "email": user_email,
+            "password": user_password,
+            "user_type": "pro",
+            "id": uuid.UUID(current_user_id).hex,
+        }
+    )
+    SubcategoriesService().create_subcategory(
+        {
+            "id": "1bc759c6-60bf-4c25-bb80-7507e08e1ae2",
+            "name": "test",
+            "category_id": "1948b81b-42bf-4ea8-87f0-61a1416e3ffa",
+            "user_id": current_user_id,
+            "is_default": False,
+        }
+    )
+    AccountsService().create_account(account_data, current_user_id)
+    TransactionsService().create_transaction(
+        {
+            "id": "c22af559-6084-45dd-b3ae-8019c1707043",
+            "user_id": current_user_id,
+            "type": "expense",
+            "transaction_date": "2023-01-01T00:00:00",
+            "accounts": [
+                {
+                    "account_id": "c4fcca77-7731-4fec-9c7f-56c111e97075",
+                    "subtotal_amount": 15,
+                }
+            ],
+            "transaction_details": [
+                {
+                    "subcategory_id": "1bc759c6-60bf-4c25-bb80-7507e08e1ae2",
+                    "description": "test",
+                    "amount": 15,
+                }
+            ],
+        }
+    )
     return UserService().authenticate(user_email, user_password)

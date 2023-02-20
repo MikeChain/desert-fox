@@ -87,3 +87,34 @@ def test_create_good_transaction(client, transaction_data):
 
     print(response.json)
     assert response.status_code == 201
+
+
+def test_get_inexistent_transaction(client, transaction):
+    response = client.get(
+        "/api/v1/transactions/d22af559-6084-45dd-b3ae-8019c1707043",
+        headers={"Authorization": f"Bearer {transaction['access_token']}"},
+    )
+
+    assert response.status_code == 404
+
+
+def test_get_transaction(client, transaction):
+    response = client.get(
+        "/api/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043",
+        headers={"Authorization": f"Bearer {transaction['access_token']}"},
+    )
+
+    assert response.status_code == 200
+    json = response.json
+    assert json["id"] == "c22af559-6084-45dd-b3ae-8019c1707043"
+    assert json["type"] == "expense"
+    assert json["transaction_date"] == "2023-01-01T00:00:00"
+
+    accounts = json["accounts"]
+    details = json["transaction_details"]
+
+    assert len(accounts) == 1
+    assert len(details) == 1
+
+    assert "id" not in accounts[0]
+    assert accounts[0]["subtotal_amount"] == 15

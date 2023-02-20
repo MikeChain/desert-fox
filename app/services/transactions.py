@@ -1,5 +1,6 @@
 import uuid
 
+from flask_smorest import abort
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.exceptions import DatabaseError, TotalMismatchError
@@ -20,6 +21,15 @@ class TransactionsService:
 
     def get_all_user_transactions(self, user_id):
         return self.model.query.filter_by(user_id=user_id).all()
+
+    def get_transaction(self, transaction_id, user_id):
+        t = self.model.query.filter_by(
+            id=transaction_id, user_id=user_id
+        ).first()
+
+        if t:
+            return t
+        abort(404, "This is not the transaction you are looking for.")
 
     def create_transaction(self, transaction_data):
         if "id" in transaction_data:
