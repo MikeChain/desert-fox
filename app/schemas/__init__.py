@@ -1,4 +1,4 @@
-from marshmallow import fields
+from marshmallow import Schema, fields
 
 from .accounts import AccountSchema, SimpleAccountSchema, UpdateAccountSchema
 from .categories import CategoriesSchema, UpdateCategoriesSchema
@@ -39,3 +39,10 @@ class TransactionSchema(PlainTransactionSchema):
         fields.Nested(PlainTransactionDetailsSchema)
     )
     accounts = fields.List(fields.Nested(AccountData))
+
+
+class PaginatedTransactionSchema(Schema):
+    items = fields.Nested(TransactionSchema, many=True)
+    pages = fields.Integer()
+    per_page = fields.Integer()
+    page = fields.Integer()

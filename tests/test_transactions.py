@@ -7,7 +7,8 @@ def test_get_empty_transactions(client, auth_tokens):
         headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
     )
     assert response.status_code == 200
-    assert response.json == []
+    assert response.json["items"] == []
+    assert response.json["per_page"] == 5
 
 
 def test_create_bad_transaction(client, auth_tokens):

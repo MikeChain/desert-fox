@@ -24,6 +24,13 @@ class TransactionsService:
     def get_all_user_transactions(self, user_id) -> list[TransactionsModel]:
         return self.model.query.filter_by(user_id=user_id).all()
 
+    def get_pagination(self, user_id, page, size):
+        return (
+            self.model.query.filter_by(user_id=user_id)
+            .order_by(self.model.transaction_date)
+            .paginate(page=page, per_page=size)
+        )
+
     def get_transaction(self, transaction_id, user_id) -> TransactionsModel:
         t = self.model.query.filter_by(
             id=transaction_id, user_id=user_id

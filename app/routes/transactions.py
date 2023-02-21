@@ -1,3 +1,4 @@
+from flask import request
 from flask.views import MethodView
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_smorest import Blueprint, abort
@@ -5,6 +6,7 @@ from flask_smorest import Blueprint, abort
 from app.exceptions import DatabaseError, TotalMismatchError
 from app.schemas import (
     DetailsSchema,
+    PaginatedTransactionSchema,
     PlainTransactionUpdateSchema,
     TransactionSchema,
 )
@@ -21,10 +23,16 @@ bp = Blueprint(
 @bp.route("")
 class Transactions(MethodView):
     @jwt_required()
-    @bp.response(200, TransactionSchema(many=True))
+    # @bp.response(200, TransactionSchema(many=True))
     def get(self):
+        page = request.args.get("page", default=1, type=int)
+        size = request.args.get("size", default=5, type=int)
         user_id = get_jwt_identity()
-        return TransactionsService().get_all_user_transactions(user_id)
+        schema = PaginatedTransactionSchema()
+        t = TransactionsService().get_pagination(user_id, page, size)
+        data = {"page": page, "per_page": size, "pages": t.pages}
+        schema.load(data)
+        return schema.dump(t)
 
     @jwt_required()
     @bp.arguments(TransactionSchema)
