@@ -1,0 +1,16 @@
+# Excluye archivos y directorios específicos
+.git
+.idea
+.vscode/
+__pycache__
+*.pyc
+*.pyo
+.gitignore
+
+# Excluye tipos de archivos específicos
+*.log
+*.md
+
+# Excluye directorios específicos y su contenido
+docs/
+tests/
