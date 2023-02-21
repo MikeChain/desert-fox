@@ -29,10 +29,10 @@ class Transactions(MethodView):
         size = request.args.get("size", default=5, type=int)
         user_id = get_jwt_identity()
         schema = PaginatedTransactionSchema()
-        t = TransactionsService().get_pagination(user_id, page, size)
-        data = {"page": page, "per_page": size, "pages": t.pages}
+        pagination = TransactionsService().get_pagination(user_id, page, size)
+        data = {"page": page, "per_page": size, "pages": pagination.pages}
         schema.load(data)
-        return schema.dump(t)
+        return schema.dump(pagination)
 
     @jwt_required()
     @bp.arguments(TransactionSchema)

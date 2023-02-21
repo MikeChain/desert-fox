@@ -1,9 +1,14 @@
+from flask import request
 from flask.views import MethodView
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from flask_smorest import Blueprint, abort
 
 from app.exceptions import AlreadyExistsError, DatabaseError, ResourceInUseError
-from app.schemas import AccountSchema, UpdateAccountSchema
+from app.schemas import (
+    AccountSchema,
+    PaginatedAccountSchema,
+    UpdateAccountSchema,
+)
 from app.services import AccountsService
 
 bp = Blueprint(
@@ -17,10 +22,16 @@ bp = Blueprint(
 @bp.route("")
 class Accounts(MethodView):
     @jwt_required()
-    @bp.response(200, AccountSchema(many=True))
+    # @bp.response(200, AccountSchema(many=True))
     def get(self):
+        page = request.args.get("page", default=1, type=int)
+        size = request.args.get("size", default=5, type=int)
         current_user = get_jwt_identity()
-        return AccountsService().get_all_user_accounts(current_user)
+        schema = PaginatedAccountSchema()
+        pagination = AccountsService().get_pagination(current_user, page, size)
+        data = {"page": page, "per_page": size, "pages": pagination.pages}
+        schema.load(data)
+        return schema.dump(pagination)
 
     @jwt_required()
     @bp.arguments(AccountSchema)

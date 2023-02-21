@@ -41,8 +41,15 @@ class TransactionSchema(PlainTransactionSchema):
     accounts = fields.List(fields.Nested(AccountData))
 
 
-class PaginatedTransactionSchema(Schema):
-    items = fields.Nested(TransactionSchema, many=True)
+class PaginationBaseSchema(Schema):
     pages = fields.Integer()
     per_page = fields.Integer()
     page = fields.Integer()
+
+
+class PaginatedTransactionSchema(PaginationBaseSchema):
+    items = fields.Nested(TransactionSchema, many=True)
+
+
+class PaginatedAccountSchema(PaginationBaseSchema):
+    items = fields.Nested(AccountSchema, many=True)

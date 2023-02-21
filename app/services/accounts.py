@@ -16,6 +16,13 @@ class AccountsService:
     def get_payments(self, account_id) -> list[PaymentAccountsModel]:
         return self.payments.query.filter_by(account_id=account_id).all()
 
+    def get_pagination(self, user_id, page, size):
+        return (
+            self.model.query.filter_by(user_id=user_id)
+            .order_by(self.model.created_at)
+            .paginate(page=page, per_page=size)
+        )
+
     def get_all_user_accounts(self, user_id) -> list[AccountsModel]:
         return self.model.query.filter_by(user_id=user_id).all()
 

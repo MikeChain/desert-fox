@@ -12,7 +12,8 @@ def test_get_user_empty_accounts(client, auth_tokens):
         headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
     )
     assert response.status_code == 200
-    assert response.json == []
+    assert response.json["items"] == []
+    assert response.json["per_page"] == 5
 
 
 def test_get_user_accounts(client, auth_tokens, account):
@@ -21,9 +22,9 @@ def test_get_user_accounts(client, auth_tokens, account):
         headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
     )
     assert response.status_code == 200
-    assert len(response.json) == 1
+    assert len(response.json["items"]) == 1
 
-    ac = response.json[0]
+    ac = response.json["items"][0]
 
     assert ac["name"] == "test_account"
     assert ac["account_type"] == "cash"
