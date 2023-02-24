@@ -27,6 +27,10 @@ def create_app(environment):
     def test_page():
         return "<h1>Probando el patrón de fábrica de aplicaciones Flask</h1>"
 
+    @app.route("/")
+    def index():
+        return "<h1>Bienvenido</h1>"
+
     for bp in BPS_TO_IMPORT:
         api.register_blueprint(bp)
 
