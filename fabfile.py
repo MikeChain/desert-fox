@@ -5,6 +5,8 @@ from fabric import Connection, task
 
 @task
 def deploy(c: Connection):
+    c.config.sudo.password = os.getenv("SUDO_PASS")
+
     with c.cd("~/proyecto/desert-fox"):
         c.run("git pull")
 
