@@ -33,3 +33,10 @@ def access(c: Connection):
     c.config.sudo.password = os.getenv("SUDO_PASS")
     output = c.sudo("tail /var/log/nginx/access.log")
     print(output.stdout)
+
+
+@task
+def ftb(c: Connection):
+    c.config.sudo.password = os.getenv("SUDO_PASS")
+    output = c.sudo("tail /var/log/fail2ban.log")
+    print(output.stdout)
