@@ -19,7 +19,7 @@ def test_register(client):
     }
 
     # Enviar una solicitud de POST al endpoint de registro
-    response = client.post("/api/v1/auth/register", json=data)
+    response = client.post("/v1/auth/register", json=data)
 
     # Verificar que la respuesta sea exitosa (status code 201)
     assert response.status_code == 201
@@ -45,7 +45,7 @@ def test_register(client):
 
 def test_register_existent_user(client, user):
     data = {"email": "testuser@example.com", "password": "testpassword"}
-    response = client.post("/api/v1/auth/register", json=data)
+    response = client.post("/v1/auth/register", json=data)
     assert response.status_code == 409
     j_data = json.loads(response.get_data(as_text=True))
     assert j_data["message"] == "Email already exists."
@@ -54,7 +54,7 @@ def test_register_existent_user(client, user):
 def test_login(client, user):
     data = {"email": "testuser@example.com", "password": "testpassword"}
 
-    response = client.post("/api/v1/auth/login", json=data)
+    response = client.post("/v1/auth/login", json=data)
 
     token = decode_token(response.json["access_token"])
 
@@ -68,7 +68,7 @@ def test_login(client, user):
 def test_login_failed(client, user):
     data = {"email": "testuser@example.com", "password": "other_password"}
 
-    response = client.post("/api/v1/auth/login", json=data)
+    response = client.post("/v1/auth/login", json=data)
 
     assert response.status_code == 401
     assert "You shall not pass." == response.json["message"]
@@ -78,25 +78,25 @@ def test_login_failed(client, user):
 def test_login_unexistent(client):
     data = {"email": "testuser@example.com", "password": "testpassword"}
 
-    response = client.post("/api/v1/auth/login", json=data)
+    response = client.post("/v1/auth/login", json=data)
     assert response.status_code == 404
 
 
 def test_logout(client, auth_tokens):
-    response = client.post("/api/v1/auth/logout")
+    response = client.post("/v1/auth/logout")
 
     # intentar hacer logout sin token
     assert response.status_code == 401
 
     response = client.post(
-        "/api/v1/auth/logout",
+        "/v1/auth/logout",
         headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
     )
     assert response.status_code == 200
 
     # token inválido
     response = client.post(
-        "/api/v1/auth/logout",
+        "/v1/auth/logout",
         headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
     )
     assert response.status_code == 401
@@ -106,7 +106,7 @@ def test_refresh(client, auth_tokens):
     token = auth_tokens["refresh_token"]
 
     response = client.post(
-        "/api/v1/auth/refresh",
+        "/v1/auth/refresh",
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 200
@@ -124,7 +124,7 @@ def test_refresh_with_access_token(client, auth_tokens):
     token = auth_tokens["access_token"]
 
     response = client.post(
-        "/api/v1/auth/refresh",
+        "/v1/auth/refresh",
         headers={"Authorization": f"Bearer {token}"},
     )
     assert response.status_code == 401
@@ -136,9 +136,9 @@ def test_expired_token(client, short_tokens):
     import time
 
     time.sleep(1)
-    response = client.post("/api/v1/auth/logout")
+    response = client.post("/v1/auth/logout")
     response = client.post(
-        "/api/v1/auth/logout",
+        "/v1/auth/logout",
         headers={"Authorization": f"Bearer {short_tokens['access_token']}"},
     )
     assert response.status_code == 401

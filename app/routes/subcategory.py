@@ -10,7 +10,7 @@ bp = Blueprint(
     "Subcategory",
     __name__,
     description="Operations on subcategories",
-    url_prefix="/api/v1/subcategories",
+    url_prefix="/v1/subcategories",
 )
 
 

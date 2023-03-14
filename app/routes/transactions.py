@@ -16,7 +16,7 @@ bp = Blueprint(
     "Transactions",
     __name__,
     description="Operations on transactions",
-    url_prefix="/api/v1/transactions",
+    url_prefix="/v1/transactions",
 )
 
 

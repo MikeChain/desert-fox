@@ -3,7 +3,7 @@ import uuid
 
 def test_get_empty_transactions(client, auth_tokens):
     response = client.get(
-        "/api/v1/transactions",
+        "/v1/transactions",
         headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
     )
     assert response.status_code == 200
@@ -25,7 +25,7 @@ def test_create_bad_transaction(client, auth_tokens):
         ],
     }
     response = client.post(
-        "/api/v1/transactions",
+        "/v1/transactions",
         headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
         json=data,
     )
@@ -53,7 +53,7 @@ def test_create_transaction_with_unexistent_keys(client, auth_tokens):
         ],
     }
     response = client.post(
-        "/api/v1/transactions",
+        "/v1/transactions",
         headers={"Authorization": f"Bearer {auth_tokens['access_token']}"},
         json=data,
     )
@@ -81,7 +81,7 @@ def test_create_good_transaction(client, transaction_data):
         ],
     }
     response = client.post(
-        "/api/v1/transactions",
+        "/v1/transactions",
         headers={"Authorization": f"Bearer {transaction_data['access_token']}"},
         json=data,
     )
@@ -92,7 +92,7 @@ def test_create_good_transaction(client, transaction_data):
 
 def test_get_inexistent_transaction(client, transaction):
     response = client.get(
-        "/api/v1/transactions/d22af559-6084-45dd-b3ae-8019c1707043",
+        "/v1/transactions/d22af559-6084-45dd-b3ae-8019c1707043",
         headers={"Authorization": f"Bearer {transaction['access_token']}"},
     )
 
@@ -101,7 +101,7 @@ def test_get_inexistent_transaction(client, transaction):
 
 def test_get_transaction(client, transaction):
     response = client.get(
-        "/api/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043",
+        "/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043",
         headers={"Authorization": f"Bearer {transaction['access_token']}"},
     )
 
@@ -124,7 +124,7 @@ def test_get_transaction(client, transaction):
 def test_update_transaction(client, transaction):
     transaction_data = {"status": "verified", "notes": "test notes"}
     response = client.put(
-        "/api/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043",
+        "/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043",
         headers={"Authorization": f"Bearer {transaction['access_token']}"},
         json=transaction_data,
     )
@@ -137,7 +137,7 @@ def test_update_transaction(client, transaction):
     assert json["notes"] == "test notes"
 
     response = client.put(
-        "/api/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043",
+        "/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043",
         headers={"Authorization": f"Bearer {transaction['access_token']}"},
         json={"transaction_date": "2023-01-02T00:00:00"},
     )
@@ -147,7 +147,7 @@ def test_update_transaction(client, transaction):
 
 def test_get_transaction_details(client, transaction):
     response = client.get(
-        "/api/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043/details",
+        "/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043/details",
         headers={"Authorization": f"Bearer {transaction['access_token']}"},
     )
 
@@ -176,7 +176,7 @@ def test_update_transaction_details(client, transaction):
         ],
     }
     response = client.put(
-        "/api/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043/details",
+        "/v1/transactions/c22af559-6084-45dd-b3ae-8019c1707043/details",
         headers={"Authorization": f"Bearer {transaction['access_token']}"},
         json=update_data,
     )
