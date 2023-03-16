@@ -23,19 +23,19 @@ class UserService:
     def __init__(self):
         self.model = UserModel
 
-    def get_all_users(self):
+    def get_all_users(self) -> list[UserModel]:
         return self.model.query.all()
 
-    def get_user(self, user_id):
+    def get_user(self, user_id) -> UserModel:
         return self.model.query.get(user_id)
 
-    def get_user_404(self, user_id):
+    def get_user_404(self, user_id) -> UserModel:
         return self.model.query.get_or_404(user_id)
 
-    def get_user_by_email(self, email):
+    def get_user_by_email(self, email) -> UserModel:
         return self.model.query.filter_by(email=email).first()
 
-    def create_user(self, user_data):
+    def create_user(self, user_data) -> UserModel:
         user = self.get_user_by_email(user_data["email"])
 
         if user:
@@ -97,7 +97,7 @@ class UserService:
             "refresh_token": refresh_token,
         }
 
-    def update(self, user_data, user_id):
+    def update(self, user_data, user_id) -> UserModel:
         user = self.get_user_404(user_id)
 
         if "name" in user_data:
@@ -115,6 +115,26 @@ class UserService:
         user.preferred_language_code = user_data.get(
             "preferred_language_code", user.preferred_language_code
         )
+
+        try:
+            db.session.add(user)
+            db.session.commit()
+        except SQLAlchemyError:
+            raise DatabaseError
+
+        return user
+
+    def upgrade_admin(self, user_id=None, user_email=None):
+        if user_id is None and user_email is None:
+            raise RuntimeError("It's necessary a way to find the user")
+
+        if user_id:
+            user = self.get_user(user_id)
+
+        if user_email and user_id is None:
+            user = self.get_user_by_email(user_email)
+
+        user.user_type = "admin"
 
         try:
             db.session.add(user)

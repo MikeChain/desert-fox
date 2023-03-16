@@ -1,3 +1,4 @@
+import click
 import redis
 from flask import current_app, request
 from flask.views import MethodView
@@ -92,3 +93,31 @@ class TokenRefresh(MethodView):
         self.redis_client.sadd("jwt:blocklist", jti)
 
         return {"access_token": new_token}
+
+
+@bp.cli.command("create-user")
+@click.argument("email")
+@click.argument("password")
+def create_user(email, password):
+    user_data = {"email": email, "password": password}
+    try:
+        user = UserService().create_user(user_data)
+        print(f"User created with ID => {user.id}")
+    except AlreadyExistsError:
+        print("Email already exists.")
+    except DatabaseError:
+        print(
+            "Good news, everyone! Our servers are experiencing technical difficulties."
+        )
+
+
+@bp.cli.command("upgrade-user")
+@click.argument("email")
+def upgrade_admin(email):
+    try:
+        user = UserService().upgrade_admin(user_email=email)
+        print(f"User {user.id} is now {user.user_type}")
+    except DatabaseError:
+        print(
+            "Good news, everyone! Our servers are experiencing technical difficulties."
+        )
